@@ -1,0 +1,42 @@
+==============================================
+  ADVANCED NUMERIC PATTERN GENERATOR
+==============================================
+
+PATTERN 1: Hollow diamond, size 5
+----------------------------------------------
+  1
+ 2 2
+3   3
+ 2 2
+  1
+
+PATTERN 1: Hollow diamond, size 7
+----------------------------------------------
+   1
+  2 2
+ 3   3
+4     4
+ 3   3
+  2 2
+   1
+
+PATTERN 1: Validation check (even size 6)
+----------------------------------------------
+  INVALID: size 6 -> must be an odd integer >= 3.
+
+PATTERN 1: Validation check (size 1)
+----------------------------------------------
+  INVALID: size 1 -> must be an odd integer >= 3.
+
+PATTERN 2: Symmetric number pyramid, size 4
+----------------------------------------------
+   1
+  121
+ 12321
+1234321
+
+PATTERN 2: Validation check (size -3)
+----------------------------------------------
+  INVALID: size -3 -> must be >= 1.
+
+Done. All dimensions validated before printing.

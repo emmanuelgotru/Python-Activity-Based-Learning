@@ -1,0 +1,31 @@
+==========================================================================
+  TUPLE-BASED COURSE REGISTRATION VALIDATION
+==========================================================================
+Rules: max 5 courses, no duplicates, prerequisites satisfied,
+exclusive pairs not combined, only known course codes.
+--------------------------------------------------------------------------
+  R01 (Ananya) - 3 course(s): CS101, MATH101, PHY101
+      -> VALID
+  R02 (Bharat) - 3 course(s): CS101, CS101, CS201
+      -> INVALID
+         * duplicate 'CS101'
+  R03 (Chitra) - 2 course(s): CS201, MATH101
+      -> INVALID
+         * missing prerequisite CS101 for CS201
+  R04 (Deepak) - 6 course(s): CS101, PHY101, PHY102, MATH101, CS101, ENG101
+      -> INVALID
+         * duplicate 'CS101'
+         * enrolled in 6 courses (max 5)
+         * mutually exclusive pair PHY101 + PHY102
+  R05 (Fatima) - 5 course(s): CS101, CS201, MATH101, PHY101, ENG101
+      -> VALID
+  R06 (Gopal) - 2 course(s): CS301, MATH101
+      -> INVALID
+         * missing prerequisite CS201 for CS301
+--------------------------------------------------------------------------
+Summary: 2 valid, 4 violating student(s).
+Students violating rules:
+   - R02 Bharat
+   - R03 Chitra
+   - R04 Deepak
+   - R06 Gopal

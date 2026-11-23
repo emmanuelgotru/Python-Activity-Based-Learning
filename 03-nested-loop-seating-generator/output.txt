@@ -1,0 +1,25 @@
+============================================================
+  EXAMINATION SEATING ARRANGEMENT GENERATOR
+============================================================
+     C1  C2  C3  C4  C5  C6  C7  C8
+     -----------------------
+R1   | O  O  O  O  O  O  O  O
+R2   | X  O  R  R  X  O  X  O
+R3   | O  O  O  O  O  O  O  O
+R4   | X  O  X  O  X  O  X  O
+R5   | O  O  O  O  O  O  R  O
+R6   | X  O  X  O  X  O  X  O
+
+  Legend: O = open seat   R = reserved   X = blocked (alternate spacing)
+
+SUMMARY
+------------------------------------------------------------
+  Total grid positions : 48  (6 rows x 8 cols)
+  Open seats (O)       : 34
+  Reserved seats (R)   : 3
+  Blocked seats (X)    : 11
+  Exam capacity        : 37 students
+  Rows fully usable    : 3 of 6
+
+VALIDATION DEMO (out-of-range reserved seat):
+  ERROR: reserved seat (9,2) is outside 6x8 grid

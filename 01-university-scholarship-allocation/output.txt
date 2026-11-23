@@ -1,0 +1,29 @@
+==========================================================================
+  RANKED LIST OF ELIGIBLE SCHOLARSHIP APPLICANTS
+==========================================================================
+Rank  Roll      Name       Aggregate   Attendance
+--------------------------------------------------------------------------
+1     S105      Fatima     91.20       97.0%     
+2     S101      Ananya     80.80       92.0%     
+3     S108      Ishaan     61.40       88.0%     
+4     S104      Deepak     61.40       76.0%     
+--------------------------------------------------------------------------
+
+TIE RESOLUTION LOG:
+  Tie at aggregate 61.40 between S108 and S104 -> broken by attendance (88% vs 76%), higher attendance ranked first.
+
+REJECTED APPLICANTS:
+--------------------------------------------------------------------------
+  S102 (Bharat):
+     - aggregate 58.6 below 60
+     - Physics score 48 below 50
+  S103 (Chitra):
+     - family income 610000 above limit 500000
+  S106 (Gopal):
+     - aggregate 55.4 below 60
+     - Chemistry score 49 below 50
+     - attendance 71.0% below 75%
+  S107 (Harsha):
+     - family income 540000 above limit 500000
+--------------------------------------------------------------------------
+Summary: 4 eligible, 4 rejected, 8 total.

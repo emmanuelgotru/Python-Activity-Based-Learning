@@ -1,0 +1,31 @@
+==========================================================================
+  STUDENT MARKS MATRIX ANALYSIS
+==========================================================================
+Student       Maths   Physics Chemistry   English        CS      Avg
+--------------------------------------------------------------------------
+Ananya           82        76        90        71        85    80.80
+Bharat           55        48        62        70        58    58.60
+Chitra           74        69        71        66        80    72.00
+Deepak           61        57        64        59        66    61.40
+Fatima           91        88        94        87        96    91.20
+--------------------------------------------------------------------------
+
+ROW-WISE (per student):
+  Ananya    total=404  avg=80.80  grade=B (First Class)    ok
+  Bharat    total=293  avg=58.60  grade=C (Second Class)   AT RISK
+  Chitra    total=360  avg=72.00  grade=B (First Class)    ok
+  Deepak    total=307  avg=61.40  grade=C (Second Class)   ok
+  Fatima    total=456  avg=91.20  grade=A (Distinction)    ok
+  -> Top performer: Fatima (456 marks)
+
+COLUMN-WISE (per subject):
+  Maths      average = 72.60
+  Physics    average = 67.60  << WEAK SUBJECT
+  Chemistry  average = 76.20
+  English    average = 70.60
+  CS         average = 77.00
+
+EXTRAMES:
+  Highest: 96 (Fatima in CS)
+  Lowest : 48 (Bharat in Physics)
+  Weak subjects (avg < 70): Physics

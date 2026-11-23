@@ -1,0 +1,69 @@
+========================================================
+  ATM BANKING SIMULATION  (opening balance Rs 5000.00)
+========================================================
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   Deposit amount:   Deposited Rs 5000.00. Balance = Rs 10000.00
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   Withdraw amount:   Withdrawn Rs 2000.00. Balance = Rs 8000.00
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   Withdraw amount:   REJECTED: per-withdrawal limit is Rs 10000.
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   Withdraw amount:   REJECTED: withdrawal must be a multiple of Rs 100.
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   Withdraw amount:   REJECTED: invalid amount (numbers only).
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   Current balance: Rs 8000.00
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   Deposit amount:   Deposited Rs 250.50. Balance = Rs 8250.50
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   ---- MINI STATEMENT ----
+   1. DEPOSIT  Rs   5000.00   balance Rs  10000.00
+   2. WITHDRAW Rs   2000.00   balance Rs   8000.00
+   3. DEPOSIT  Rs    250.50   balance Rs   8250.50
+  Current balance: Rs 8250.50
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   Withdraw amount:   Withdrawn Rs 100.00. Balance = Rs 8150.50
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice:   ---- MINI STATEMENT ----
+   1. DEPOSIT  Rs   5000.00   balance Rs  10000.00
+   2. WITHDRAW Rs   2000.00   balance Rs   8000.00
+   3. DEPOSIT  Rs    250.50   balance Rs   8250.50
+   4. WITHDRAW Rs    100.00   balance Rs   8150.50
+  Current balance: Rs 8150.50
+
+  1. Deposit        2. Withdraw
+  3. Check balance  4. Mini statement
+  5. Exit
+  Enter choice: --------------------------------------------------------
+  SESSION END: 4 transaction(s), closing balance Rs 8150.50
+========================================================

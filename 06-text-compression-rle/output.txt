@@ -1,0 +1,16 @@
+==============================================================================
+  TEXT COMPRESSION USING CHARACTER RUNS (Run-Length Encoding)
+==============================================================================
+Original                           Len   Encoded                            Len  Verdict
+------------------------------------------------------------------------------
+aaabbbcccdddd                       13   a3b3c3d4                             8  compressed by 5 bytes
+python                               6   p1y1t1h1o1n1                        12  NOT beneficial (+6 bytes)
+aaaaaaaaaaaaaaaaaaaa                20   a20                                  3  compressed by 17 bytes
+compression                         11   c1o1m1p1r1e1s2i1o1n1                20  NOT beneficial (+9 bytes)
+zzzzzzzzzzzzzzzzzzzzzzzzzzzz        28   z28                                  3  compressed by 25 bytes
+mississippi                         11   m1i1s2i1s2i1p2i1                    16  NOT beneficial (+5 bytes)
+(empty)                              0   (empty)                              0  same length - not beneficial
+------------------------------------------------------------------------------
+Compression was beneficial for 3 of 7 samples.
+Note: highly repetitive text compresses well; random or short
+text usually grows, because counts add extra characters.
