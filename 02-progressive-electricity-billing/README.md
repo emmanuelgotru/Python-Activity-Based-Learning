@@ -72,6 +72,10 @@ Tariff policy used:
 
 ## 5. Flowchart
 
+![Flowchart](flowchart.png)
+
+Text version:
+
 ```
                  ┌─────────┐
                  │  START  │

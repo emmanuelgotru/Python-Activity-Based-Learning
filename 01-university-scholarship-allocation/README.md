@@ -68,6 +68,10 @@ the system must:
 
 ## 5. Flowchart
 
+![Flowchart](flowchart.png)
+
+Text version:
+
 ```
                         ┌─────────┐
                         │  START  │

@@ -25,7 +25,8 @@
 
 Every case study folder contains:
 
-- `README.md` — problem statement, objectives, assumptions, algorithm, flowchart, pseudocode, test cases, output and conclusion
+- `README.md` — problem statement, objectives, assumptions, algorithm, pseudocode, test cases, output and conclusion
+- `flowchart.png` — flowchart image of the program
 - `solution.py` — the Python program
 - `test_cases.py` — test cases written to check the program
 - `output.txt` — output of the program

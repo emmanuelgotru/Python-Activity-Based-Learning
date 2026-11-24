@@ -57,6 +57,10 @@ For every sample the system reports both lengths and a verdict:
 
 ## 5. Flowchart
 
+![Flowchart](flowchart.png)
+
+Text version:
+
 ```
               ┌─────────┐
               │  START  │

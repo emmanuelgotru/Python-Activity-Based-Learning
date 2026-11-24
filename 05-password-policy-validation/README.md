@@ -72,6 +72,10 @@ The engine reports *every* violated rule for each password, not just the first.
 
 ## 5. Flowchart
 
+![Flowchart](flowchart.png)
+
+Text version:
+
 ```
               ┌─────────┐
               │  START  │

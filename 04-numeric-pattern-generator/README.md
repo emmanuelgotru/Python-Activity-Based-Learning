@@ -66,6 +66,10 @@ message instead of printing garbage.
 
 ## 5. Flowchart
 
+![Flowchart](flowchart.png)
+
+Text version:
+
 ```
               ┌─────────┐
               │  START  │
