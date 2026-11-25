@@ -1,53 +1,18 @@
 # Case Study 100 — Comprehensive Smart Campus Management Simulation
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Develop a menu-driven program that integrates student records, attendance, marks, event registration, resource allocation and summary reporting using conditional statements, loops, strings, lists, tuples and tuple unpacking.
 
-Develop a **menu-driven program** that integrates **student records,
-attendance, marks, event registration, resource allocation, and summary
-reporting** using conditional statements, loops, strings, lists, nested lists,
-tuples, and tuple unpacking.
+## Objectives
 
-Menu:
+Combine every syllabus topic in one menu loop; store records as tuples in lists and unpack them for reporting; validate each input before mutating state; compute revenue and unserved-passenger totals with loops.
 
-```
-1. Add student        2. Record attendance
-3. Record marks       4. Event registration
-5. Transport alloc.   6. Summary report
-0. Exit
-```
+## Assumptions
 
-Features:
+Data lives in memory only and starts empty each run. Attendance eligibility is 75%; grades are FIRST 75+, SECOND 60+, THIRD 40+, else FAIL. Marks are integers 0-100 in four subjects. Events cost Rs 200 / Rs 150 / Rs 100 and cannot be booked twice. The bus fleet has at most 6 buses; served = min(demand, buses x capacity). Sample input is scripted in demo_input.txt.
 
-- **Add student** `(roll, name, dept)` — rejects empty fields and duplicate rolls.
-- **Attendance** `(roll, present, total)` — computes % and 75 % eligibility.
-- **Marks** — 4 subject marks (0–100 each), average and FIRST/SECOND/THIRD/FAIL.
-- **Events** — `TechFest ₹200`, `CulturalNight ₹150`, `SportsMeet ₹100`;
-  rejects unknown rolls and duplicate registrations; tracks revenue.
-- **Transport** — per route: demand, bus capacity, buses available →
-  served / unserved passengers; fleet limited to 6 buses.
-- **Summary** — prints every record and aggregate totals.
-
-## 2. Objectives
-
-- Integrate all syllabus topics in one **menu-driven `while` loop**.
-- Store records as **tuples inside lists**; **unpack** them for reporting.
-- Validate every input with conditionals before mutating state.
-- Compute aggregates (revenue, unserved passengers) with loops.
-- Produce a consolidated summary report.
-
-## 3. Assumptions
-
-- Single-session in-memory data (no file storage) — starts empty each run.
-- Attendance eligibility threshold 75 %; grades: FIRST ≥ 75, SECOND ≥ 60,
-  THIRD ≥ 40, else FAIL.
-- Marks are integers 0–100; exactly 4 subjects.
-- Transport: served = min(demand, buses × capacity); unserved = remainder.
-- Maximum 6 buses in the fleet.
-- Demo input scripted in `demo_input.txt` for reproducible output.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -82,52 +47,11 @@ Features:
 5. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-                 ┌─────────┐
-                 │  START  │
-                 └────┬────┘
-                      ▼
-        ┌──────────────────────────┐
-        │ init empty record lists  │
-        └─────────────┬────────────┘
-                      ▼
-     ┌───────────────────────────────┐◄──────────────┐
-     │ PRINT menu ; READ choice      │               │
-     └───────────────┬───────────────┘               │
-                     ▼                               │
-   ┌──────────────────────────────────┐              │
-   │ 1? validate roll/name/dept       │              │
-   │    → students += (roll,name,dept)│              │
-   │ 2? validate attendance numbers   │              │
-   │    → attendance += tuple, flag % │              │
-   │ 3? validate 4 marks in 0–100     │              │
-   │    → marks_records += tuple      │              │
-   │ 4? validate event choice         │              │
-   │    → event_regs += tuple, revenue│              │
-   │ 5? validate route numbers, ≤6 bus│              │
-   │    → route_stats += tuple        │              │
-   └──────────────────┬───────────────┘              │
-                      ▼                              │
-   ┌──────────────────────────────────┐              │
-   │ 6? summary:                      │              │
-   │   FOR each tuple → unpack & print│              │
-   │   Σ revenue, Σ unserved          │              │
-   │ 0? goodbye → BREAK ──────────────┼──────────────┤
-   │ other? REJECT ───────────────────┼──────────────┘
-   └──────────────────────────────────┘
-                      ▼
-               ┌─────────────┐
-               │    END      │
-               └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN SMART_CAMPUS_SIMULATION
@@ -179,13 +103,53 @@ BEGIN SMART_CAMPUS_SIMULATION
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (attendance + transport allocation):
+## Python source code
 
 ```python
+"""
+Case Study 100: Comprehensive Smart Campus Management Simulation
+----------------------------------------------------------------
+Syllabus: menu-driven loops, conditional statements, strings, lists,
+nested lists, tuples, tuple unpacking, operators, validation.
+"""
+
+# ---------------- global state (lists / tuples) ----------------
+students = []        # (roll, name, dept)
+attendance = []      # (roll, present, total)
+marks_records = []   # (roll, [m1, m2, m3, m4])
+event_regs = []      # (roll, event_name, fee)
+route_stats = []     # (route, demand, capacity, buses_available)
+
+EVENTS = [("TechFest", 200), ("CulturalNight", 150), ("SportsMeet", 100)]
+TOTAL_BUSES = 6
+
+
+def find_student(roll):
+    for s in students:
+        if s[0] == roll:
+            return s
+    return None
+
+
+def add_student():
+    # Validate the roll BEFORE reading further fields, so a rejected
+    # entry never consumes inputs meant for the next menu operation.
+    roll = input("  Roll no: ").strip().upper()
+    if not roll:
+        print("  REJECTED: roll is required.")
+        return
+    if find_student(roll) is not None:
+        print("  REJECTED: roll %s already exists." % roll)
+        return
+    name = input("  Name   : ").strip()
+    if not name:
+        print("  REJECTED: name is required.")
+        return
+    dept = input("  Department: ").strip().upper()
+    students.append((roll, name, dept))
+    print("  Added %s (%s, %s)." % (roll, name, dept))
+
+
 def record_attendance():
     roll = input("  Roll no: ").strip().upper()
     if find_student(roll) is None:
@@ -204,68 +168,166 @@ def record_attendance():
     pct = present * 100.0 / total
     verdict = "ELIGIBLE" if pct >= 75 else "NOT ELIGIBLE (<75%)"
     print("  %s attendance = %.1f%% -> %s" % (roll, pct, verdict))
+
+
+def record_marks():
+    roll = input("  Roll no: ").strip().upper()
+    if find_student(roll) is None:
+        print("  REJECTED: unknown roll %s." % roll)
+        return
+    raw = input("  Marks in 4 subjects (space separated): ").strip().split()
+    if len(raw) != 4:
+        print("  REJECTED: exactly 4 marks required.")
+        return
+    try:
+        marks = [int(x) for x in raw]
+    except ValueError:
+        print("  REJECTED: marks must be integers.")
+        return
+    for m in marks:
+        if m < 0 or m > 100:
+            print("  REJECTED: marks must be within 0-100.")
+            return
+    marks_records.append((roll, marks))
+    avg = sum(marks) / len(marks)
+    if avg >= 75:
+        grade = "FIRST"
+    elif avg >= 60:
+        grade = "SECOND"
+    elif avg >= 40:
+        grade = "THIRD"
+    else:
+        grade = "FAIL"
+    print("  %s marks=%s avg=%.2f grade=%s" % (roll, marks, avg, grade))
+
+
+def register_event():
+    roll = input("  Roll no: ").strip().upper()
+    if find_student(roll) is None:
+        print("  REJECTED: unknown roll %s." % roll)
+        return
+    print("  Events:")
+    for i in range(len(EVENTS)):
+        print("    %d. %-14s fee Rs %d" % (i + 1, EVENTS[i][0], EVENTS[i][1]))
+    try:
+        choice = int(input("  Choice: ").strip())
+    except ValueError:
+        print("  REJECTED: invalid choice.")
+        return
+    if choice < 1 or choice > len(EVENTS):
+        print("  REJECTED: choice out of range.")
+        return
+    event_name, fee = EVENTS[choice - 1]          # tuple unpacking
+    for r, ev, f in event_regs:
+        if r == roll and ev == event_name:
+            print("  REJECTED: already registered for %s." % event_name)
+            return
+    event_regs.append((roll, event_name, fee))
+    print("  Registered %s for %s (Rs %d)." % (roll, event_name, fee))
+
+
+def allocate_transport():
+    route = input("  Route name: ").strip().upper()
+    try:
+        demand = int(input("  Passenger demand: ").strip())
+        capacity = int(input("  Bus capacity     : ").strip())
+        buses = int(input("  Buses available  : ").strip())
+    except ValueError:
+        print("  REJECTED: numbers only.")
+        return
+    if demand < 0 or capacity <= 0 or buses < 0:
+        print("  REJECTED: invalid values.")
+        return
+    if buses > TOTAL_BUSES:
+        print("  REJECTED: fleet has only %d buses." % TOTAL_BUSES)
+        return
+    served = min(demand, buses * capacity)
+    unserved = demand - served
+    route_stats.append((route, demand, capacity, buses))
+    print("  %s: served=%d  unserved=%d  (buses %d x capacity %d)"
+          % (route, served, unserved, buses, capacity))
+
+
+def summary():
+    print("\n" + "=" * 62)
+    print("  CAMPUS SUMMARY REPORT")
+    print("=" * 62)
+    print("  Students on roll : %d" % len(students))
+    for roll, name, dept in students:                       # unpacking
+        print("     %-6s %-12s %s" % (roll, name, dept))
+
+    print("  Attendance records: %d" % len(attendance))
+    for roll, present, total in attendance:
+        print("     %-6s %d/%d = %.1f%%" % (roll, present, total,
+                                            present * 100.0 / total))
+
+    print("  Marks records: %d" % len(marks_records))
+    for roll, marks in marks_records:
+        avg = sum(marks) / len(marks)
+        print("     %-6s %s avg=%.2f" % (roll, marks, avg))
+
+    revenue = 0
+    for roll, ev, fee in event_regs:
+        revenue += fee
+    print("  Event registrations: %d  ->  revenue Rs %d"
+          % (len(event_regs), revenue))
+
+    total_unserved = 0
+    for route, demand, capacity, buses in route_stats:
+        served = min(demand, buses * capacity)
+        total_unserved += demand - served
+        print("     route %-6s demand=%d served=%d unserved=%d"
+              % (route, demand, served, demand - served))
+    print("  Total unserved passengers: %d" % total_unserved)
+    print("=" * 62)
+
+
+def menu():
+    print("\n  SMART CAMPUS MENU")
+    print("  1. Add student        2. Record attendance")
+    print("  3. Record marks       4. Event registration")
+    print("  5. Transport alloc.   6. Summary report")
+    print("  0. Exit")
+
+
+def main():
+    print("=" * 62)
+    print("  COMPREHENSIVE SMART CAMPUS MANAGEMENT SIMULATION")
+    print("=" * 62)
+    while True:
+        menu()
+        choice = input("  Enter choice: ").strip()
+        if choice == "1":
+            add_student()
+        elif choice == "2":
+            record_attendance()
+        elif choice == "3":
+            record_marks()
+        elif choice == "4":
+            register_event()
+        elif choice == "5":
+            allocate_transport()
+        elif choice == "6":
+            summary()
+        elif choice == "0":
+            print("  Session ended. Goodbye!")
+            break
+        else:
+            print("  REJECTED: unknown option '%s'." % choice)
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run (interactive): `python3 solution.py`
-Run (scripted demo): `python3 solution.py < demo_input.txt`
+## Test cases
 
-## 8. Test Cases
+Sixteen automated checks: student added; duplicate and empty rolls rejected; attendance 18/20 = 90% eligible, 13/20 not eligible, 25/20 invalid; marks 85 78 90 82 average 83.75 graded FIRST and mark 101 rejected; event registered for Rs 200 with duplicates refused; route R1 with 180 demand, capacity 40 and 4 buses leaves 20 unserved; summary totals and student lookups. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **16/16 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | add A1 Ananya CSE | stored as tuple | `("A1","Ananya","CSE")` | PASS |
-| TC-02 | add A1 again | duplicate rejected | still 1 student | PASS |
-| TC-03 | add with empty roll | rejected | still 1 student | PASS |
-| TC-04 | attendance A1 18/20 | 90 % ELIGIBLE, tuple stored | `("A1",18,20)` | PASS |
-| TC-05 | attendance A1 13/20 | 65 % NOT ELIGIBLE | flagged | PASS |
-| TC-06 | attendance 25/20 | present > total rejected | unchanged | PASS |
-| TC-07a | marks 85 78 90 82 | avg 83.75 recorded | avg=83.75 | PASS |
-| TC-07b | same marks | grade FIRST (avg ≥ 75) | FIRST | PASS |
-| TC-08 | mark 101 | out-of-range rejected | 1 record kept | PASS |
-| TC-09 | event choice 1 | TechFest registered, fee 200 | fee 200 | PASS |
-| TC-10 | same event again | duplicate rejected | 1 registration | PASS |
-| TC-11 | route R1 180/40×4 | served 160, unserved 20 | `unserved=20` | PASS |
-| TC-12a | summary | reports 1 student | "Students on roll : 1" | PASS |
-| TC-12b | summary | revenue ₹200 | "revenue Rs 200" | PASS |
-| TC-13a | `find_student("A1")` | returns Ananya | Ananya | PASS |
-| TC-13b | `find_student("Z9")` | returns None | None | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt) · scripted input: [`demo_input.txt`](./demo_input.txt)
+## Conclusion
 
-```text
-  CAMPUS SUMMARY REPORT
-  Students on roll : 2
-     A1     Ananya       CSE
-     A2     Bharat       ECE
-  Attendance records: 1
-     A2     13/20 = 65.0%
-  Marks records: 2
-     A1     [85, 78, 90, 82] avg=83.75
-     A2     [55, 48, 62, 70] avg=58.75
-  Event registrations: 2  ->  revenue Rs 350
-     route R1     demand=180 served=160 unserved=20
-     route R2     demand=60 served=60 unserved=0
-  Total unserved passengers: 20
-```
-
-The scripted demo also exercises rejections: duplicate roll `A1`, attendance
-25/20 (impossible), a mark of 101, and a duplicate event registration — each
-refused with a message while existing records stay intact.
-
-## 10. Conclusion
-
-This integrated simulation ties together every syllabus topic in one coherent
-program: a `while` menu loop dispatches to six features; records live as
-tuples inside lists and are unpacked for reporting; strings are normalised for
-roll numbers; conditionals and try/except guard every input; and loops compute
-revenue (₹350) and unserved passengers (20) for the summary. The 16 automated
-tests verify both the happy paths and each rejection path, proving that a
-well-structured menu-driven design can safely combine student records,
-attendance, marks, events and resource allocation in a single maintainable
-program.
+One menu loop safely combines six features: tuples in lists hold every record, unpacking drives the summary, and each rejection path is covered by the tests - including the duplicate-roll case that must not consume the next menu input.

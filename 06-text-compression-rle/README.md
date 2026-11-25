@@ -1,41 +1,18 @@
 # Case Study 35 — Text Compression Using Character Runs
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Encode a string by grouping consecutive repeated characters (run-length encoding) and compare original and encoded lengths, including cases where the encoding is not beneficial.
 
-**Encode a string by grouping consecutive repeated characters** (Run-Length
-Encoding) and **compare original and encoded lengths**, including cases where
-encoding is **not beneficial**.
+## Objectives
 
-Encoding rule: each maximal run of a character becomes `<char><count>`, e.g.
-`aaabbbcccdddd → a3b3c3d4`.
+Traverse the string with a loop and group equal runs; build the encoded string with concatenation; compare lengths to decide whether compression helped; handle empty, single-run and alternating inputs.
 
-For every sample the system reports both lengths and a verdict:
+## Assumptions
 
-- `compressed by N bytes` — encoded shorter than original
-- `NOT beneficial (+N bytes` — encoded longer than original
-- `same length - not beneficial` — equal lengths
+Inputs contain letters only, so counts embedded in the encoding are never ambiguous. Each run becomes <char><count>. Beneficial means strictly shorter; equal length counts as not beneficial. Empty input encodes to empty output.
 
-## 2. Objectives
-
-- Traverse a **string** with a loop, grouping consecutive equal characters.
-- Build the encoded string using **string concatenation** and **operators**.
-- Compare **lengths** to decide whether compression helped.
-- Handle edge cases (empty string, single characters, alternating characters).
-- Demonstrate *when* a simple algorithm helps and when it backfires.
-
-## 3. Assumptions
-
-- Input strings contain **letters only** (no digits), so counts embedded in
-  the encoding are never ambiguous.
-- Count of a run is written in decimal with no separator (safe under the
-  alphabetic-input assumption).
-- "Beneficial" means strictly shorter; equal length is reported as
-  not beneficial.
-- Empty input encodes to empty output.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -55,60 +32,11 @@ For every sample the system reports both lengths and a verdict:
 11. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-              ┌─────────┐
-              │  START  │
-              └────┬────┘
-                   ▼
-            ┌─────────────┐
-            │ READ text   │
-            └──────┬──────┘
-                   ▼
-          ┌─────────────────┐     YES   ┌────────────────┐
-          │ text empty ?    ├──────────►│ encoded ← ""   │
-          └──────┬──────────┘           └───────┬────────┘
-              NO  ▼                             │
-     ┌───────────────────────┐                  │
-     │ parts ← []            │                  │
-     │ count ← 1             │                  │
-     └──────────┬────────────┘                  │
-                ▼                               │
-   ┌─────────────────────────┐◄───────┐         │
-   │ FOR i ← 1 TO len−1      │        │         │
-   └────────────┬────────────┘        │         │
-                ▼                     │         │
-   ┌─────────────────────────┐        │         │
-   │ text[i] = text[i−1] ?   │        │         │
-   │  YES → count + 1        │        │         │
-   │  NO  → parts += char+cnt│        │         │
-   │        count ← 1        │        │         │
-   └────────────┬────────────┘        │         │
-                └──────────┬──────────┘         │
-                           ▼                    │
-   ┌─────────────────────────┐                  │
-   │ parts += last char+count│                  │
-   │ encoded ← JOIN(parts)   │                  │
-   └────────────┬────────────┘                  │
-                └──────────────┬────────────────┘
-                               ▼
-              ┌─────────────────────────────┐
-              │ len(enc) < len(text)?       │
-              │  YES → "compressed by N"    │
-              │  NO  → "NOT beneficial"     │
-              └──────────────┬──────────────┘
-                             ▼
-                      ┌─────────────┐
-                      │    END      │
-                      └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN TEXT_COMPRESSION
@@ -139,13 +67,19 @@ BEGIN TEXT_COMPRESSION
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (the encoder):
+## Python source code
 
 ```python
+"""
+Case Study 35: Text Compression Using Character Runs (RLE)
+-----------------------------------------------------------
+Syllabus: strings, loops, conditional statements, operators,
+lists, length comparisons.
+Assumption: input strings contain letters only (no digits), so the
+count part of the encoding is never ambiguous.
+"""
+
+
 def encode(text):
     """Run-length encode: consecutive runs become <char><count>."""
     if text == "":
@@ -160,53 +94,58 @@ def encode(text):
             count = 1
     parts.append(text[-1] + str(count))
     return "".join(parts)
+
+
+def main():
+    samples = [
+        "aaabbbcccdddd",
+        "python",
+        "aaaaaaaaaaaaaaaaaaaa",
+        "compression",
+        "zzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+        "mississippi",
+        "",
+    ]
+
+    print("=" * 78)
+    print("  TEXT COMPRESSION USING CHARACTER RUNS (Run-Length Encoding)")
+    print("=" * 78)
+    print("%-30s %7s   %-30s %7s  %s" %
+          ("Original", "Len", "Encoded", "Len", "Verdict"))
+    print("-" * 78)
+
+    beneficial = 0
+    for s in samples:
+        enc = encode(s)
+        if len(enc) < len(s):
+            verdict = "compressed by %d bytes" % (len(s) - len(enc))
+            beneficial += 1
+        elif len(enc) > len(s):
+            verdict = "NOT beneficial (+%d bytes)" % (len(enc) - len(s))
+        else:
+            verdict = "same length - not beneficial"
+        print("%-30s %7d   %-30s %7d  %s" %
+              (s if s else "(empty)", len(s), enc if enc else "(empty)", len(enc), verdict))
+
+    print("-" * 78)
+    print("Compression was beneficial for %d of %d samples." %
+          (beneficial, len(samples)))
+    print("Note: highly repetitive text compresses well; random or short")
+    print("text usually grows, because counts add extra characters.")
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run: `python3 solution.py`
+## Test cases
 
-## 8. Test Cases
+Ten automated checks: aaabbbccc to a3b3c3; python to p1y1t1h1o1n1; twenty a's to a20; empty stays empty; ababab does not merge; compression helps repetitive text but grows python and aabb (equal length); mississippi to m1i1s2i1s2i1p2i1; 13 characters compress to 8. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **10/10 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | `aaabbbccc` | `a3b3c3` | `a3b3c3` | PASS |
-| TC-02 | `python` (all single) | `p1y1t1h1o1n1` | matched | PASS |
-| TC-03 | 20 × `a` | `a20` (3 chars) | `a20` | PASS |
-| TC-04 | `""` (empty) | `""` | `""` | PASS |
-| TC-05 | `ababab` (alternating) | `a1b1a1b1a1b1` | matched | PASS |
-| TC-06 | 20 × `a` | encoded shorter than original | 3 < 20 | PASS |
-| TC-07 | `python` | encoded longer ("not beneficial") | 12 > 6 | PASS |
-| TC-08 | `aabb` | equal length → not beneficial | 4 = 4 | PASS |
-| TC-09 | `mississippi` | `m1i1s2i1s2i1p2i1` | matched | PASS |
-| TC-10 | `aaabbbcccdddd` (13) | encoded length 8 | 8 | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt)
+## Conclusion
 
-```text
-Original                         Len   Encoded                          Len   Verdict
-aaabbbcccdddd                     13   a3b3c3d4                          8   compressed by 5 bytes
-python                             6   p1y1t1h1o1n1                     12   NOT beneficial (+6 bytes)
-aaaaaaaaaaaaaaaaaaaa              20   a20                                3   compressed by 17 bytes
-compression                       11   c1o1m1p1r1e1s2i1o1n1              20   NOT beneficial (+9 bytes)
-zzzzzzzzzzzzzzzzzzzzzzzzzzzz      28   z28                                3   compressed by 25 bytes
-mississippi                       11   m1i1s2i1s2i1p2i1                  16   NOT beneficial (+5 bytes)
-(empty)                            0   (empty)                            0   same length - not beneficial
-
-Compression was beneficial for 3 of 7 samples.
-```
-
-## 10. Conclusion
-
-A single loop with a run counter implements classic Run-Length Encoding in
-under 15 lines. The length comparison made the algorithm's behaviour explicit:
-it compressed highly repetitive text (`28 z's → z28`, saving 25 bytes) but
-*expanded* ordinary text like `compression` (+9 bytes) because every isolated
-character grows to two characters. This case study demonstrates both sides of
-algorithmic trade-offs — the same code that is optimal for repetitive data is
-sub-optimal for random data — and all boundary cases (empty, alternating,
-single-run inputs) are locked down by the automated tests.
+A single loop with a run counter implements RLE in a few lines, and the length comparison shows both sides of the trade-off: repetitive text shrinks sharply while ordinary text grows. All boundary cases are locked down by the tests.

@@ -1,44 +1,18 @@
 # Case Study 29 — Password Policy Validation Engine
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Evaluate sample passwords against minimum length, character-category, repetition and prohibited-substring rules, explaining every failed condition.
 
-Evaluate sample password strings against **minimum length, character-category,
-repetition, and prohibited-substring rules**, and **explain each failed
-condition**.
+## Objectives
 
-Policy enforced:
+Scan strings character by character with loops; track the four character categories with flags; detect three-in-a-row repetitions; collect and report all failures, not just the first.
 
-1. Minimum length: **8 characters**
-2. At least one **uppercase** letter (A–Z)
-3. At least one **lowercase** letter (a–z)
-4. At least one **digit** (0–9)
-5. At least one **special character** from `!@#$%^&*()-_=+[]{};:,.<>?`
-6. Must **not contain** any prohibited substring (case-insensitive):
-   `password`, `123456`, `admin`, `qwerty`
-7. No character may repeat **3 or more times consecutively** (`aaa`, `111`)
+## Assumptions
 
-The engine reports *every* violated rule for each password, not just the first.
+Passwords are plain ASCII. Policy: at least 8 characters, at least one uppercase, one lowercase, one digit and one special character from !@#$%^&*()-_=+[]{};:,.<>?, no prohibited substring (password, 123456, admin, qwerty - case-insensitive), and no character repeated three times in a row.
 
-## 2. Objectives
-
-- Manipulate **strings** character-by-character with loops.
-- Use **conditional statements** and boolean logic for multi-rule checks.
-- Track character categories with simple flags (variables).
-- Detect consecutive-repetition runs with a counter.
-- Produce human-readable failure explanations.
-
-## 3. Assumptions
-
-- Passwords are plain ASCII strings.
-- Prohibited-substring matching is case-insensitive.
-- Special characters are exactly those listed in the policy.
-- Repetition check counts identical **adjacent** characters (aabbcc is fine,
-  aaab is not).
-- An empty failure list means the password is accepted.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -70,60 +44,11 @@ The engine reports *every* violated rule for each password, not just the first.
 16. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-              ┌─────────┐
-              │  START  │
-              └────┬────┘
-                   ▼
-          ┌─────────────────┐
-          │ errors ← []     │
-          └────────┬────────┘
-                   ▼
-       ┌───────────────────────┐
-       │ length < 8 ?          │──YES──► append "length"
-       └───────────┬───────────┘
-                   ▼
-        ┌──────────────────────┐
-        │ FOR each ch in pw    │
-        │  set upper/lower/    │
-        │  digit/special flags │
-        └──────────┬───────────┘
-                   ▼
-      ┌──────────────────────────┐
-      │ any flag false ?         │──YES──► append missing-category
-      └──────────┬───────────────┘                 messages
-                 ▼                                 │
-      ┌──────────────────────────┐                 │
-      │ FOR word IN PROHIBITED   │                 │
-      │  word ⊂ lower(pw)?       │──YES──► append "contains word"
-      └──────────┬───────────────┘                 │
-                 ▼                                 │
-      ┌──────────────────────────┐                 │
-      │ scan for run ≥ 3 repeats │──YES──► append "3+ repeats"
-      └──────────┬───────────────┘                 │
-                 ▼                                 │
-      ┌──────────────────────────┐◄────────────────┘
-      │ errors empty ?           │
-      └────┬──────────────┬──────┘
-        YES▼              ▼ NO
-   ┌────────────┐  ┌──────────────────┐
-   │ print PASS │  │ print FAIL +     │
-   └─────┬──────┘  │ every error      │
-         │         └────────┬─────────┘
-         └────────┬─────────┘
-                  ▼
-           ┌─────────────┐
-           │    END      │
-           └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN PASSWORD_VALIDATION
@@ -181,14 +106,23 @@ BEGIN PASSWORD_VALIDATION
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (validation + repetition scan):
+## Python source code
 
 ```python
+"""
+Case Study 29: Password Policy Validation Engine
+-------------------------------------------------
+Syllabus: strings, string methods, conditional statements, loops,
+operators, boolean logic, reporting failures.
+"""
+
+PROHIBITED = ["password", "123456", "admin", "qwerty"]
+MIN_LENGTH = 8
+SPECIALS = "!@#$%^&*()-_=+[]{};:,.<>?"
+
+
 def has_repetition(pw, run_limit=3):
+    """True if any character repeats `run_limit` times consecutively."""
     run = 1
     for i in range(1, len(pw)):
         if pw[i] == pw[i - 1]:
@@ -199,71 +133,94 @@ def has_repetition(pw, run_limit=3):
             run = 1
     return False
 
+
 def validate(pw):
+    """Return a list of failed-condition messages (empty list => valid)."""
     errors = []
+
     if len(pw) < MIN_LENGTH:
         errors.append("length %d is below minimum %d" % (len(pw), MIN_LENGTH))
-    has_upper = has_lower = has_digit = has_special = False
+
+    has_upper = False
+    has_lower = False
+    has_digit = False
+    has_special = False
     for ch in pw:
-        ...classify ch into the four categories...
-    if not has_upper: errors.append("missing an uppercase letter (A-Z)")
-    ...
+        if "A" <= ch <= "Z":
+            has_upper = True
+        elif "a" <= ch <= "z":
+            has_lower = True
+        elif "0" <= ch <= "9":
+            has_digit = True
+        elif ch in SPECIALS:
+            has_special = True
+
+    if not has_upper:
+        errors.append("missing an uppercase letter (A-Z)")
+    if not has_lower:
+        errors.append("missing a lowercase letter (a-z)")
+    if not has_digit:
+        errors.append("missing a digit (0-9)")
+    if not has_special:
+        errors.append("missing a special character (%s)" % SPECIALS[:8] + "...")
+
+    lower = pw.lower()
     for word in PROHIBITED:
-        if word in pw.lower():
+        if word in lower:
             errors.append("contains prohibited substring '%s'" % word)
+
     if has_repetition(pw):
         errors.append("contains 3+ identical characters in a row")
+
     return errors
+
+
+def main():
+    samples = [
+        "welcome",
+        "Passw0rd",
+        "Strong#Pass1",
+        "aaabbbCCC123!",
+        "admin@12345",
+        "MyCampus#2026",
+        "AAAAAAAAaaaa1111!",
+    ]
+
+    print("=" * 70)
+    print("  PASSWORD POLICY VALIDATION ENGINE")
+    print("=" * 70)
+    print("Policy: length >= %d, upper+lower+digit+special, no prohibited" % MIN_LENGTH)
+    print("substrings %s, no 3-in-a-row repeats." % PROHIBITED)
+    print("-" * 70)
+
+    passed = 0
+    for pw in samples:
+        errors = validate(pw)
+        if not errors:
+            passed += 1
+            print("  [ PASS ] %-20s -> accepted" % pw)
+        else:
+            print("  [ FAIL ] %-20s -> %d problem(s)" % (pw, len(errors)))
+            for e in errors:
+                print("            * %s" % e)
+
+    print("-" * 70)
+    print("Result: %d of %d sample passwords satisfy the policy."
+          % (passed, len(samples)))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run: `python3 solution.py`
+## Test cases
 
-## 8. Test Cases
+Eleven automated checks: MyCampus#2026 accepted; short passwords and missing uppercase/digit/special each reported; 'admin' detected case-insensitively; repeats found in aaabbb but not in abcabc or aabbcc; several failures reported together; exactly 2 of the 7 samples accepted. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **11/11 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | `MyCampus#2026` | accepted (0 errors) | `[]` | PASS |
-| TC-02 | `Ab1!` | length failure reported | "length … below 8" | PASS |
-| TC-03 | `allsmall1!` | missing uppercase reported | reported | PASS |
-| TC-04 | `NoDigits!!` | missing digit reported | reported | PASS |
-| TC-05 | `NoSpecial12` | missing special reported | reported | PASS |
-| TC-06 | `Admin@12345` | prohibited `admin` detected (case-insensitive) | reported | PASS |
-| TC-07a | `aaabbb` | consecutive repeats detected | True | PASS |
-| TC-07b | `abcabc` | no false positive | False | PASS |
-| TC-08 | `aabbcc` (pairs only) | allowed | False | PASS |
-| TC-09 | `aaa` | ≥ 3 failures reported together | ≥ 3 | PASS |
-| TC-10 | all 7 samples | exactly 2 accepted | 2 | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt)
+## Conclusion
 
-```text
-  [ FAIL ] welcome             -> 5 problem(s)
-            * length 7 is below minimum 8
-            * missing an uppercase letter (A-Z)
-            * missing a digit (0-9)
-            * missing a special character (!@#$%^&*)...
-  [ PASS ] Strong#Pass1        -> accepted
-  [ FAIL ] aaabbbCCC123!       -> 1 problem(s)
-            * contains 3+ identical characters in a row
-  [ FAIL ] admin@12345         -> 2 problem(s)
-            * missing an uppercase letter (A-Z)
-            * contains prohibited substring 'admin'
-  [ PASS ] MyCampus#2026       -> accepted
-Result: 2 of 7 sample passwords satisfy the policy.
-```
-
-## 10. Conclusion
-
-The engine enforces all seven password rules and, importantly, explains *every*
-failure rather than stopping at the first — e.g. `admin@12345` is flagged for
-both a missing uppercase letter and a prohibited substring. Character-category
-tracking uses only flags and a single loop, and the repetition detector is a
-classic run-length scan. Of the seven sample passwords, only the two fully
-compliant ones (`Strong#Pass1`, `MyCampus#2026`) were accepted, confirming the
-policy behaves exactly as specified with clear, actionable feedback.
+The engine reports every violated rule for each password - for example admin@12345 fails on both a missing uppercase letter and a prohibited substring. Category flags and a run counter keep the logic to a single pass over the string.

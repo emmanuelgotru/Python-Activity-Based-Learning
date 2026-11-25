@@ -1,41 +1,18 @@
 # Case Study 27 — Advanced Numeric Pattern Generator
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Produce a hollow diamond or a symmetric numerical pattern from a user-specified size, rejecting invalid dimensions and keeping the output carefully aligned.
 
-Produce a **hollow diamond** or **symmetric numerical pattern** based on
-user-specified dimensions, with **validation for invalid dimensions** and
-carefully aligned output.
+## Objectives
 
-Patterns implemented:
+Generate both patterns with nested loops; compute distance from the centre, row length and padding with operators; validate every dimension before printing; align rows with space padding.
 
-1. **Hollow diamond** of height `n` (must be an odd integer ≥ 3): edge cells
-   show a digit that grows to the centre and shrinks back; interior cells are
-   blanks.
-2. **Symmetric number pyramid** of height `m` (must be ≥ 1):
-   `1 / 121 / 12321 / 1234321 …`, right-aligned by padding.
+## Assumptions
 
-Invalid dimensions (even, < 3, or negative) must be rejected with a clear
-message instead of printing garbage.
+The diamond size must be an odd integer of at least 3 so a centre row exists; the pyramid size must be at least 1. Digits used are 1-9, so practical sizes do not exceed 9. Output is printed one row per line.
 
-## 2. Objectives
-
-- Generate patterns with **nested loops** (row loop + column loop).
-- Use **operators** for distance-from-centre and padding arithmetic.
-- **Validate dimensions** with conditional statements before printing.
-- Maintain careful alignment using string concatenation and space padding.
-- Demonstrate both filled-edge (hollow) and mirrored (pyramid) construction.
-
-## 3. Assumptions
-
-- Diamond height must be odd so a single centre row exists; minimum 3.
-- Pyramid height must be ≥ 1; there is no upper limit.
-- Digits used are 1…9 — practical heights are ≤ 9 for single-digit rows.
-- Output is printed to the console, one row per line, left-padded with spaces.
-- Dimensions are supplied as integers.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -64,68 +41,11 @@ message instead of printing garbage.
 12. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-              ┌─────────┐
-              │  START  │
-              └────┬────┘
-                   ▼
-        ┌──────────────────────┐
-        │ READ n (diamond size)│
-        └──────────┬───────────┘
-                   ▼
-        ┌──────────────────────┐     YES   ┌──────────────────┐
-        │ n < 3 OR n even ?    ├──────────►│ print INVALID    │
-        └──────────┬───────────┘           └────────┬─────────┘
-               NO  ▼                                │
-        ┌──────────────────────┐                    │
-        │ mid ← n // 2         │                    │
-        └──────────┬───────────┘                    │
-                   ▼                                │
-      ┌─────────────────────────┐◄──────────┐       │
-      │ FOR i ← 0 TO n−1        │           │       │
-      └────────────┬────────────┘           │       │
-                   ▼                        │       │
-      ┌─────────────────────────┐           │       │
-      │ dist = |i − mid|        │           │       │
-      │ digit = mid − dist + 1  │           │       │
-      │ row_len = 2(mid−dist)+1 │           │       │
-      │ pad = (n − row_len) // 2│           │       │
-      └────────────┬────────────┘           │       │
-                   ▼                        │       │
-      ┌─────────────────────────┐           │       │
-      │ FOR j ← 0 TO row_len−1  │           │       │
-      │  edge? digit : " "      │           │       │
-      └────────────┬────────────┘           │       │
-                   ▼                        │       │
-      ┌─────────────────────────┐           │       │
-      │ PRINT pad spaces + line │           │       │
-      └────────────┬────────────┘           │       │
-                   └──────────┬─────────────┘       │
-                              ▼                     │
-                   ┌──────────────────────┐         │
-                   │ READ m (pyramid)     │         │
-                   │ m < 1 ? → INVALID ───┼─────────┤
-                   └──────────┬───────────┘         │
-                          OK  ▼                     │
-      ┌─────────────────────────┐                   │
-      │ FOR i ← 1 TO m          │                   │
-      │  build 1..i..1 line     │                   │
-      │  PRINT pad + line       │                   │
-      └────────────┬────────────┘                   │
-                   └──────────┬─────────────────────┘
-                              ▼
-                       ┌─────────────┐
-                       │    END      │
-                       └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN NUMERIC_PATTERN_GENERATOR
@@ -171,17 +91,23 @@ BEGIN NUMERIC_PATTERN_GENERATOR
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (hollow diamond row construction):
+## Python source code
 
 ```python
+"""
+Case Study 27: Advanced Numeric Pattern Generator
+--------------------------------------------------
+Syllabus: nested loops, conditional statements, operators, pattern
+generation, input validation, string formatting.
+"""
+
+
 def hollow_diamond(n):
+    """Print a hollow diamond of height n (must be odd, >= 3)."""
     if n < 3 or n % 2 == 0:
         print("  INVALID: size %d -> must be an odd integer >= 3." % n)
         return False
+
     mid = n // 2
     for i in range(n):
         dist = abs(i - mid)
@@ -196,62 +122,67 @@ def hollow_diamond(n):
                 line += " "
         print(" " * pad + line)
     return True
+
+
+def number_pyramid(m):
+    """Print a symmetric numeric pyramid of height m (must be >= 1)."""
+    if m < 1:
+        print("  INVALID: size %d -> must be >= 1." % m)
+        return False
+    for i in range(1, m + 1):
+        line = ""
+        for j in range(1, i + 1):
+            line += str(j)
+        for j in range(i - 1, 0, -1):
+            line += str(j)
+        print(" " * (m - i) + line)
+    return True
+
+
+def main():
+    print("=" * 46)
+    print("  ADVANCED NUMERIC PATTERN GENERATOR")
+    print("=" * 46)
+
+    print("\nPATTERN 1: Hollow diamond, size 5")
+    print("-" * 46)
+    hollow_diamond(5)
+
+    print("\nPATTERN 1: Hollow diamond, size 7")
+    print("-" * 46)
+    hollow_diamond(7)
+
+    print("\nPATTERN 1: Validation check (even size 6)")
+    print("-" * 46)
+    hollow_diamond(6)
+
+    print("\nPATTERN 1: Validation check (size 1)")
+    print("-" * 46)
+    hollow_diamond(1)
+
+    print("\nPATTERN 2: Symmetric number pyramid, size 4")
+    print("-" * 46)
+    number_pyramid(4)
+
+    print("\nPATTERN 2: Validation check (size -3)")
+    print("-" * 46)
+    number_pyramid(-3)
+
+    print("\nDone. All dimensions validated before printing.")
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run: `python3 solution.py`
+## Test cases
 
-## 8. Test Cases
+Nine automated checks: size 5 accepted with centre row '3   3' and exactly five rows; even size 6 and size 1 rejected; pyramid of size 4 ends with 1234321 and has a centred top row; negative size rejected; size 7 accepted. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **9/9 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | `hollow_diamond(5)` | accepted | `True` | PASS |
-| TC-02 | size 5 | exactly 5 rows printed | 5 rows | PASS |
-| TC-03 | size 5 centre row | `3   3` (hollow) | `3   3` | PASS |
-| TC-04 | `hollow_diamond(6)` | rejected (even) | `False` + INVALID | PASS |
-| TC-05 | `hollow_diamond(1)` | rejected (< 3) | `False` + INVALID | PASS |
-| TC-06 | `number_pyramid(4)` | 4 rows, last `1234321` | matched | PASS |
-| TC-07 | `number_pyramid(-3)` | rejected | `False` + INVALID | PASS |
-| TC-08 | pyramid top row | centred `1` | `   1` | PASS |
-| TC-09 | size 7 run | accepted, 7 rows | `True` | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt)
+## Conclusion
 
-```text
-PATTERN 1: Hollow diamond, size 7
-    1
-   2 2
-  3   3
- 4     4
-  3   3
-   2 2
-    1
-
-PATTERN 1: Validation check (even size 6)
-  INVALID: size 6 -> must be an odd integer >= 3.
-
-PATTERN 2: Symmetric number pyramid, size 4
-   1
-  121
- 12321
-1234321
-
-PATTERN 2: Validation check (size -3)
-  INVALID: size -3 -> must be >= 1.
-```
-
-## 10. Conclusion
-
-Both patterns are produced entirely with nested loops, absolute-distance
-arithmetic, and space padding — no formatting libraries required. The
-validation gate runs before any row is printed, so invalid dimensions (even
-sizes, sizes below 3, negatives) yield a clear diagnostic instead of a broken
-shape. Tests confirm the hollow interior (`3   3` at the centre of a size-5
-diamond), exact row counts, and pyramid symmetry, showing that careful loop
-bounds and padding formulas are sufficient for precisely aligned pattern
-generation.
+Distance-from-centre arithmetic and space padding produced both patterns with no formatting libraries, and every invalid dimension was rejected with a clear message before any row was printed.

@@ -21,21 +21,14 @@
   3. Record marks       4. Event registration
   5. Transport alloc.   6. Summary report
   0. Exit
-  Enter choice:   Roll no:   Name   :   Department:   REJECTED: roll A1 already exists.
+  Enter choice:   Roll no:   REJECTED: roll A1 already exists.
 
   SMART CAMPUS MENU
   1. Add student        2. Record attendance
   3. Record marks       4. Event registration
   5. Transport alloc.   6. Summary report
   0. Exit
-  Enter choice:   REJECTED: unknown option '18'.
-
-  SMART CAMPUS MENU
-  1. Add student        2. Record attendance
-  3. Record marks       4. Event registration
-  5. Transport alloc.   6. Summary report
-  0. Exit
-  Enter choice:   REJECTED: unknown option '20'.
+  Enter choice:   Roll no:   Classes attended:   Classes held     :   A1 attendance = 90.0% -> ELIGIBLE
 
   SMART CAMPUS MENU
   1. Add student        2. Record attendance
@@ -117,7 +110,8 @@
   Students on roll : 2
      A1     Ananya       CSE
      A2     Bharat       ECE
-  Attendance records: 1
+  Attendance records: 2
+     A1     18/20 = 90.0%
      A2     13/20 = 65.0%
   Marks records: 2
      A1     [85, 78, 90, 82] avg=83.75

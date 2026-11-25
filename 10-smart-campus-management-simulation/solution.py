@@ -24,15 +24,20 @@ def find_student(roll):
 
 
 def add_student():
+    # Validate the roll BEFORE reading further fields, so a rejected
+    # entry never consumes inputs meant for the next menu operation.
     roll = input("  Roll no: ").strip().upper()
-    name = input("  Name   : ").strip()
-    dept = input("  Department: ").strip().upper()
-    if not roll or not name:
-        print("  REJECTED: roll and name are required.")
+    if not roll:
+        print("  REJECTED: roll is required.")
         return
     if find_student(roll) is not None:
         print("  REJECTED: roll %s already exists." % roll)
         return
+    name = input("  Name   : ").strip()
+    if not name:
+        print("  REJECTED: name is required.")
+        return
+    dept = input("  Department: ").strip().upper()
     students.append((roll, name, dept))
     print("  Added %s (%s, %s)." % (roll, name, dept))
 

@@ -1,50 +1,18 @@
 # Case Study 42 — Student Marks Matrix Analysis
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Analyse a matrix of student marks across subjects: compute row-wise and column-wise statistics, identify the top performer and detect subjects with low average performance.
 
-Analyse a **matrix of student marks across subjects**, calculate **row-wise and
-column-wise statistics**, identify **top performers**, and detect **subjects
-with low average performance**.
+## Objectives
 
-Data: a nested list with 5 students (rows) × 5 subjects (columns):
+Store the marks as a nested list; compute row totals, averages and grades with loops; compute column averages the same way; track the maximum and minimum marks with their positions.
 
-```
-            Maths  Physics  Chem  English  CS
-Ananya        82      76     90     71     85
-Bharat        55      48     62     70     58
-Chitra        74      69     71     66     80
-Deepak        61      57     64     59     66
-Fatima        91      88     94     87     96
-```
+## Assumptions
 
-Reports required:
+Five students x five subjects, every mark an integer 0-100, averages divide by 5. Grades: A at 85+, B at 70+, C at 55+, else D. A subject is weak when its average is below 70; a student is at risk below an average of 60. Data is hypothetical.
 
-1. Row-wise: total, average, grade (A ≥ 85, B ≥ 70, C ≥ 55, else D), at-risk
-   flag (average < 60).
-2. Column-wise: subject averages; flag **weak subjects** (average < 70).
-3. Top performer (highest total) and the highest / lowest single marks with
-   their positions.
-
-## 2. Objectives
-
-- Store two-dimensional data in a **nested list**.
-- Compute row statistics with loops + `sum`/`len` operators.
-- Compute column statistics with a nested loop (column index outer logic).
-- Track max/min **with their positions** using variables.
-- Apply **conditional statements** for grades, weak-subject and at-risk flags.
-
-## 3. Assumptions
-
-- Every mark is an integer in 0–100.
-- Each student has exactly 5 subject marks; averages divide by 5.
-- Weak-subject threshold: column average < 70.
-- At-risk threshold: student average < 60.
-- Grade boundaries are inclusive at the lower limit (85/70/55/40).
-- All data is hypothetical.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -67,60 +35,11 @@ Reports required:
 10. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-              ┌─────────┐
-              │  START  │
-              └────┬────┘
-                   ▼
-      ┌─────────────────────────┐
-      │ MARKS nested list ready │
-      └────────────┬────────────┘
-                   ▼
-      ┌─────────────────────────┐◄────────────┐
-      │ FOR r ← 0 TO 4 (rows)   │             │
-      └────────────┬────────────┘             │
-                   ▼                          │
-      ┌─────────────────────────┐             │
-      │ total = Σ row           │             │
-      │ avg = total / 5         │             │
-      │ grade by thresholds     │             │
-      │ avg < 60 → AT RISK      │             │
-      │ track max total         │             │
-      └────────────┬────────────┘             │
-                   └──────────┬───────────────┘
-                              ▼
-      ┌─────────────────────────┐◄────────────┐
-      │ FOR c ← 0 TO 4 (cols)   │             │
-      └────────────┬────────────┘             │
-                   ▼                          │
-      ┌─────────────────────────┐             │
-      │ total = Σ column        │             │
-      │ avg = total / 5         │             │
-      │ avg < 70 → WEAK SUBJECT │             │
-      └────────────┬────────────┘             │
-                   └──────────┬───────────────┘
-                              ▼
-      ┌─────────────────────────┐
-      │ scan whole matrix for   │
-      │ max / min + positions   │
-      └────────────┬────────────┘
-                   ▼
-      ┌─────────────────────────┐
-      │ PRINT all four reports  │
-      └────────────┬────────────┘
-                   ▼
-            ┌─────────────┐
-            │    END      │
-            └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN MARKS_MATRIX_ANALYSIS
@@ -160,83 +79,116 @@ BEGIN MARKS_MATRIX_ANALYSIS
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (column averages + weak detection):
+## Python source code
 
 ```python
-for c in range(len(SUBJECTS)):
-    total = 0
+"""
+Case Study 42: Student Marks Matrix Analysis
+--------------------------------------------
+Syllabus: nested lists, conditional statements, loops, operators,
+row-wise / column-wise statistics, max/min with position.
+"""
+
+SUBJECTS = ["Maths", "Physics", "Chemistry", "English", "CS"]
+STUDENTS = ["Ananya", "Bharat", "Chitra", "Deepak", "Fatima"]
+
+# rows = students, columns = subjects
+MARKS = [
+    [82, 76, 90, 71, 85],
+    [55, 48, 62, 70, 58],
+    [74, 69, 71, 66, 80],
+    [61, 57, 64, 59, 66],
+    [91, 88, 94, 87, 96],
+]
+
+WEAK_SUBJECT_AVERAGE = 70.0
+AT_RISK_AVERAGE = 60.0
+
+
+def grade_of(avg):
+    if avg >= 85:
+        return "A (Distinction)"
+    if avg >= 70:
+        return "B (First Class)"
+    if avg >= 55:
+        return "C (Second Class)"
+    return "D (Third Class)"
+
+
+def main():
+    # ---------- display the matrix ----------
+    print("=" * 74)
+    print("  STUDENT MARKS MATRIX ANALYSIS")
+    print("=" * 74)
+    header = "%-9s" % "Student" + "".join("%10s" % s for s in SUBJECTS) + "%9s" % "Avg"
+    print(header)
+    print("-" * 74)
     for r in range(len(STUDENTS)):
-        total += MARKS[r][c]
-    avg = total / len(STUDENTS)
-    flag = ""
-    if avg < WEAK_SUBJECT_AVERAGE:          # 70
-        flag = "  << WEAK SUBJECT"
-        weak.append(SUBJECTS[c])
-    print("  %-10s average = %5.2f%s" % (SUBJECTS[c], avg, flag))
+        row = MARKS[r]
+        avg = sum(row) / len(row)
+        print("%-9s" % STUDENTS[r] + "".join("%10d" % m for m in row) + "%9.2f" % avg)
+    print("-" * 74)
+
+    # ---------- row-wise statistics ----------
+    print("\nROW-WISE (per student):")
+    best_total = -1
+    best_index = -1
+    for r in range(len(STUDENTS)):
+        total = sum(MARKS[r])
+        avg = total / len(MARKS[r])
+        status = "AT RISK" if avg < AT_RISK_AVERAGE else "ok"
+        print("  %-9s total=%3d  avg=%5.2f  grade=%-18s %s"
+              % (STUDENTS[r], total, avg, grade_of(avg), status))
+        if total > best_total:
+            best_total = total
+            best_index = r
+    print("  -> Top performer: %s (%d marks)" % (STUDENTS[best_index], best_total))
+
+    # ---------- column-wise statistics ----------
+    print("\nCOLUMN-WISE (per subject):")
+    weak = []
+    for c in range(len(SUBJECTS)):
+        total = 0
+        for r in range(len(STUDENTS)):
+            total += MARKS[r][c]
+        avg = total / len(STUDENTS)
+        flag = ""
+        if avg < WEAK_SUBJECT_AVERAGE:
+            flag = "  << WEAK SUBJECT"
+            weak.append(SUBJECTS[c])
+        print("  %-10s average = %5.2f%s" % (SUBJECTS[c], avg, flag))
+
+    # ---------- extremes ----------
+    high = -1
+    low = 101
+    hi_pos = lo_pos = (0, 0)
+    for r in range(len(STUDENTS)):
+        for c in range(len(SUBJECTS)):
+            if MARKS[r][c] > high:
+                high = MARKS[r][c]
+                hi_pos = (r, c)
+            if MARKS[r][c] < low:
+                low = MARKS[r][c]
+                lo_pos = (r, c)
+    print("\nEXTRAMES:")
+    print("  Highest: %d (%s in %s)" % (high, STUDENTS[hi_pos[0]], SUBJECTS[hi_pos[1]]))
+    print("  Lowest : %d (%s in %s)" % (low, STUDENTS[lo_pos[0]], SUBJECTS[lo_pos[1]]))
+    print("  Weak subjects (avg < %.0f): %s" %
+          (WEAK_SUBJECT_AVERAGE, ", ".join(weak) if weak else "none"))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run: `python3 solution.py`
+## Test cases
 
-## 8. Test Cases
+Fourteen automated checks: 5x5 shape; row totals 404 and 456; Maths average 72.6; Physics 67.6 flagged as the only weak subject; Fatima top performer; lowest mark 48; only Bharat at risk; grade boundaries at 90/75/60/40; all marks within 0-100. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **14/14 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | matrix shape | 5 × 5 | 5 × 5 | PASS |
-| TC-02a | Ananya row | total 404 | 404 | PASS |
-| TC-02b | Fatima row | total 456 | 456 | PASS |
-| TC-03 | Maths column | average 72.6 | 72.6 | PASS |
-| TC-04 | Physics column | average 67.6 (< 70 → weak) | 67.6, weak | PASS |
-| TC-05 | all columns | only Physics below 70 | `["Physics"]` | PASS |
-| TC-06 | row totals | top = Fatima | Fatima | PASS |
-| TC-07 | whole matrix | lowest single mark 48 | 48 | PASS |
-| TC-08 | student averages | only Bharat < 60 (at risk) | `["Bharat"]` | PASS |
-| TC-09a | grade(90) | `A (Distinction)` | matched | PASS |
-| TC-09b | grade(75) | `B (First Class)` | matched | PASS |
-| TC-09c | grade(60) | `C (Second Class)` | matched | PASS |
-| TC-09d | grade(40) | `D (Third Class)` | matched | PASS |
-| TC-10 | all marks | within 0–100 | all in range | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt)
+## Conclusion
 
-```text
-ROW-WISE (per student):
-  Ananya    total=404  avg=80.80  grade=A (Distinction)   ok
-  Bharat    total=293  avg=58.60  grade=D (Third Class)   AT RISK
-  Chitra    total=360  avg=72.00  grade=B (First Class)   ok
-  Deepak    total=307  avg=61.40  grade=C (Second Class)  ok
-  Fatima    total=456  avg=91.20  grade=A (Distinction)   ok
-  -> Top performer: Fatima (456 marks)
-
-COLUMN-WISE (per subject):
-  Maths      average = 72.60
-  Physics    average = 67.60  << WEAK SUBJECT
-  Chemistry  average = 76.20
-  English    average = 70.60
-  CS         average = 77.00
-
-EXTRAMES:
-  Highest: 96 (Fatima in CS)
-  Lowest : 48 (Bharat in Physics)
-  Weak subjects (avg < 70): Physics
-```
-
-## 10. Conclusion
-
-The nested-list matrix supports both traversal directions with the same data
-structure: row loops give per-student totals, grades and risk flags, while
-column loops expose subject averages and correctly isolated Physics (67.6) as
-the only weak subject. Max/min scanning with stored positions pinpointed 96
-(Fatima, CS) and 48 (Bharat, Physics) without any extra libraries. All 14
-assertions confirm the statistics, classifications and threshold flags —
-showing that disciplined indexing into nested lists is sufficient for
-full-fledged matrix analytics.
+The same nested list supports both traversal directions: row loops give per-student grades and risk flags, column loops isolated Physics as the only weak subject, and a full scan found 96 (Fatima, CS) and 48 (Bharat, Physics).

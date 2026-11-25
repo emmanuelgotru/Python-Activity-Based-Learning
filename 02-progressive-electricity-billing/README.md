@@ -1,47 +1,18 @@
 # Case Study 02 — Progressive Electricity Billing
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Calculate household electricity bills using multiple consumption slabs, fixed charges, surcharges and rebates, then compare bills across several months and identify unusual increases.
 
-Calculate household electricity bills using **multiple consumption slabs**, fixed
-charges, surcharges, and rebates, then **compare bills across several months**
-and **identify unusual increases**.
+## Objectives
 
-Tariff policy used:
+Implement slab-wise tariff arithmetic with loops and operators; apply the cess, rebate and unusual-increase rules with conditional statements; store monthly data as tuples and compare consecutive months by percentage change.
 
-| Slab | Units | Rate (₹/unit) |
-|------|-------|---------------|
-| 1 | 0 – 100 | 5 |
-| 2 | 101 – 300 | 7 |
-| 3 | 301 – 500 | 9 |
-| 4 | above 500 | 12 |
+## Assumptions
 
-- Fixed charge: ₹50 per month
-- Surcharge: 2 % education cess on the energy charge
-- Rebate: 5 % of energy charge when this month's consumption is lower than the
-  previous month's
-- Unusual increase: any month-on-month jump greater than 30 %
+Slabs: 0-100 at Rs 5, 101-300 at Rs 7, 301-500 at Rs 9, above 500 at Rs 12, applied progressively. Fixed charge Rs 50; 2% cess on the energy charge; 5% rebate when consumption falls below the previous month. A rise above 30% month-on-month is unusual. Data is hypothetical.
 
-## 2. Objectives
-
-- Implement **progressive (slab) tariff** arithmetic with operators and loops.
-- Apply **conditional statements** for cess, rebate, and flagging rules.
-- Store multi-month data in a **list of tuples** and **unpack** it while iterating.
-- Compute percentage changes and compare across months.
-- Produce a formatted statement plus a comparison report.
-
-## 3. Assumptions
-
-- Slabs are applied progressively (only the units falling in each slab are
-  charged at that slab's rate).
-- Cess is computed on the energy charge only (not on fixed charge).
-- Rebate applies only when consumption decreases vs. the immediately previous
-  month; the first month has no previous month, hence no rebate.
-- A rise > 30 % (strictly) is "unusual"; equal-to-30 % is not flagged.
-- All amounts are in ₹; data is hypothetical.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -70,70 +41,11 @@ Tariff policy used:
 10. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-                 ┌─────────┐
-                 │  START  │
-                 └────┬────┘
-                      ▼
-        ┌───────────────────────────┐
-        │ load tariff slabs, fixed, │
-        │ cess, rebate, month data  │
-        └─────────────┬─────────────┘
-                      ▼
-             ┌────────────────┐
-             │ prev ← None    │
-             └───────┬────────┘
-                     ▼
-       ┌──────────────────────────┐◄─────────────┐
-       │ FOR (month, units) in data│             │
-       └────────────┬─────────────┘             │
-                    ▼                           │
-       ┌──────────────────────────┐             │
-       │ loop through slabs:      │             │
-       │ energy += in_slab × rate │             │
-       └────────────┬─────────────┘             │
-                    ▼                           │
-       ┌──────────────────────────┐             │
-       │ cess = energy × 0.02     │             │
-       │ rebate = (units<prev)    │             │
-       │   ? energy × 0.05 : 0    │             │
-       │ total = energy+50+cess   │             │
-       │          − rebate        │             │
-       │ store bill, prev = units │             │
-       └────────────┬─────────────┘             │
-                    └─────────────┬─────────────┘
-                                  ▼
-                    ┌──────────────────────────┐
-                    │ print statement table    │
-                    └────────────┬─────────────┘
-                                 ▼
-                  ┌────────────────────────────┐◄──────┐
-                  │ FOR consecutive month pairs│       │
-                  └────────────┬───────────────┘       │
-                               ▼                       │
-                 ┌──────────────────────────┐          │
-                 │ change = Δunits / units  │          │
-                 │ change>30% ? FLAG unusual│          │
-                 │ change<0   ? note rebate │          │
-                 └────────────┬─────────────┘          │
-                              └──────────┬─────────────┘
-                                         ▼
-                              ┌──────────────────────┐
-                              │ print max/min bills  │
-                              └──────────┬───────────┘
-                                         ▼
-                                  ┌─────────────┐
-                                  │    END      │
-                                  └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN ELECTRICITY_BILLING
@@ -173,15 +85,39 @@ BEGIN ELECTRICITY_BILLING
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (slab charge + bill with rebate):
+## Python source code
 
 ```python
+"""
+Case Study 02: Progressive Electricity Billing
+----------------------------------------------
+Syllabus: variables, data types, operators, conditional statements, loops,
+lists, tuples, tuple unpacking, percentage calculations.
+"""
+
+# ---------------- Tariff policy ----------------
+# (upper_limit_of_slab, rate_per_unit)
+SLABS = [(100, 5.0), (300, 7.0), (500, 9.0), (float("inf"), 12.0)]
+FIXED_CHARGE = 50.0
+CESS_RATE = 0.02                 # 2 % education cess on energy charge
+REBATE_RATE = 0.05               # 5 % rebate when consumption falls vs previous month
+UNUSUAL_INCREASE = 0.30          # > 30 % jump month-on-month is "unusual"
+
+# (month, units_consumed)
+MONTHS = [
+    ("Jun", 180),
+    ("Jul", 245),
+    ("Aug", 390),
+    ("Sep", 310),
+    ("Oct", 268),
+]
+
+
 def slab_charge(units):
-    remaining, lower, charge = units, 0, 0.0
+    """Progressive / slab-wise energy charge."""
+    remaining = units
+    lower = 0
+    charge = 0.0
     for limit, rate in SLABS:
         if remaining <= 0:
             break
@@ -191,63 +127,76 @@ def slab_charge(units):
         lower = limit
     return charge
 
+
 def compute_bill(units, prev_units):
+    """Return a bill breakdown dictionary for one month."""
     energy = slab_charge(units)
     cess = energy * CESS_RATE
-    rebate = energy * REBATE_RATE if (prev_units is not None and units < prev_units) else 0.0
+    rebate = 0.0
+    if prev_units is not None and units < prev_units:
+        rebate = energy * REBATE_RATE
     total = energy + FIXED_CHARGE + cess - rebate
-    return {"energy": energy, "cess": cess, "rebate": rebate, "total": round(total, 2)}
+    return {
+        "units": units,
+        "energy": round(energy, 2),
+        "fixed": FIXED_CHARGE,
+        "cess": round(cess, 2),
+        "rebate": round(rebate, 2),
+        "total": round(total, 2),
+    }
+
+
+def main():
+    bills = []
+    prev = None
+    for month, units in MONTHS:
+        bill = compute_bill(units, prev)
+        bills.append((month, bill))
+        prev = units
+
+    print("=" * 82)
+    print("  PROGRESSIVE ELECTRICITY BILL STATEMENT")
+    print("=" * 82)
+    print("%-6s %7s %9s %7s %7s %8s %10s" %
+          ("Month", "Units", "Energy", "Fixed", "Cess", "Rebate", "Total( Rs)"))
+    print("-" * 82)
+    for month, b in bills:
+        print("%-6s %7d %9.2f %7.2f %7.2f %8.2f %10.2f" %
+              (month, b["units"], b["energy"], b["fixed"], b["cess"], b["rebate"], b["total"]))
+    print("-" * 82)
+
+    print("\nMONTH-ON-MONTH COMPARISON:")
+    print("-" * 82)
+    for i in range(1, len(bills)):
+        m0, b0 = bills[i - 1]
+        m1, b1 = bills[i]
+        change = (b1["units"] - b0["units"]) / b0["units"]
+        pct = change * 100
+        flag = ""
+        if change > UNUSUAL_INCREASE:
+            flag = "  << UNUSUAL INCREASE (>30%)"
+        elif change < 0:
+            flag = "  (decrease -> rebate applied)"
+        print("  %s -> %s : %+6.1f%%%s" % (m0, m1, pct, flag))
+
+    print("\nHIGHEST BILL : %s (Rs %.2f)" %
+          max(((m, b["total"]) for m, b in bills), key=lambda x: x[1]))
+    print("LOWEST  BILL : %s (Rs %.2f)" %
+          min(((m, b["total"]) for m, b in bills), key=lambda x: x[1]))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run: `python3 solution.py`
+## Test cases
 
-## 8. Test Cases
+Eleven automated checks: slab charges 100 to Rs 500, 300 to Rs 1900, 500 to Rs 3700 and 550 to Rs 4300; fixed charge and 2% cess present; rebate on a decrease and none on an increase; Jul to Aug flagged as unusual; total for 100 units Rs 560; five months supplied. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **11/11 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | 100 units | ₹500 energy (all slab 1) | 500.0 | PASS |
-| TC-02 | 300 units | ₹1900 (100×5 + 200×7) | 1900.0 | PASS |
-| TC-03 | 500 units | ₹3700 (1900 + 200×9) | 3700.0 | PASS |
-| TC-04 | 550 units | ₹4300 (3700 + 50×12) | 4300.0 | PASS |
-| TC-05 | any bill | fixed ₹50 included | fixed = 50.0 | PASS |
-| TC-06 | 100 units | cess = 2% of 500 = ₹10 | 10.0 | PASS |
-| TC-07 | 310 after 390 (↓) | rebate > 0 | rebate 99.50 | PASS |
-| TC-08 | 390 after 245 (↑) | no rebate | 0.0 | PASS |
-| TC-09 | Jul→Aug +59.2 % | flagged unusual (>30 %) | flagged | PASS |
-| TC-10 | 100 units bill | total = 500+50+10 = 560 | 560.0 | PASS |
-| TC-11 | month list | 5 months supplied | 5 | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt)
+## Conclusion
 
-```text
-Month    Units    Energy   Fixed    Cess   Rebate Total( Rs)
-Jun        180   1060.00   50.00   21.20     0.00    1131.20
-Jul        245   1515.00   50.00   30.30     0.00    1595.30
-Aug        390   2710.00   50.00   54.20     0.00    2814.20
-Sep        310   1990.00   50.00   39.80    99.50    1980.30
-Oct        268   1676.00   50.00   33.52    83.80    1675.72
-
-  Jun -> Jul :  +36.1%  << UNUSUAL INCREASE (>30%)
-  Jul -> Aug :  +59.2%  << UNUSUAL INCREASE (>30%)
-  Aug -> Sep :  -20.5%  (decrease -> rebate applied)
-  Sep -> Oct :  -13.5%  (decrease -> rebate applied)
-
-HIGHEST BILL : Aug (Rs 2814.20)
-```
-
-## 10. Conclusion
-
-The billing engine correctly applies four progressive slabs, the fixed charge,
-2 % cess, and the conservation rebate, producing statements that match manual
-computation for every test case. Month-on-month comparison successfully
-identified the two unusual jumps (Jun→Jul +36.1 %, Jul→Aug +59.2 %) and
-acknowledged rebate-eligible decreases. The design separates tariff policy
-(constants) from computation (functions), so a change in slab rates requires
-editing only the `SLABS` table — demonstrating clean algorithmic decomposition
-using only loops, conditionals, and operators.
+The engine applies all four slabs, the fixed charge, cess and conservation rebate exactly as specified, and month-on-month comparison flagged the two unusual jumps (36.1% and 59.2%). Tariff policy lives in one table, so rates can change without touching the logic.

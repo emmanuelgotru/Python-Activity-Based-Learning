@@ -1,44 +1,18 @@
 # Case Study 01 — University Scholarship Allocation
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Design a system that evaluates scholarship applicants using aggregate marks, subject-wise minimum scores, attendance and family income, ranks the eligible students, and resolves ties using predefined rules.
 
-Design a system that evaluates university scholarship applicants using **aggregate
-marks**, **subject-wise minimum scores**, **attendance**, and **family income**
-criteria, **ranks** the eligible students, and **resolves ties** using predefined
-rules.
+## Objectives
 
-Given a list of applicant records `(roll, name, marks[], attendance%, income)`,
-the system must:
+Represent applicant records with tuples and lists; apply multi-criteria eligibility with conditional statements; compute aggregates using loops and operators; rank eligible students with a composite tie-breaking key and report every rejection with its reason.
 
-1. Reject any applicant whose aggregate is below 60, or who scores below 50 in
-   any subject, or whose attendance is below 75%, or whose family income exceeds
-   ₹5,00,000.
-2. Rank all eligible applicants by aggregate (descending).
-3. Resolve ties by: higher attendance first, then lower family income, then
-   roll number (ascending).
-4. Report every rejected applicant along with the exact reason(s).
+## Assumptions
 
-## 2. Objectives
+Every applicant has five subject marks out of 100; aggregate is their arithmetic mean. Cutoffs: aggregate 60, each subject 50, attendance 75%, family income Rs 5,00,000. Ties are broken by attendance (higher first), then lower income, then roll number. All data is hypothetical.
 
-- Represent real-world records using **tuples** and **lists**.
-- Apply **conditional statements** for multi-criteria eligibility.
-- Compute aggregates with **operators** and **loops**.
-- **Sort / rank** data with a composite **tie-breaking key**.
-- Unpack nested data with **tuple unpacking**.
-- Produce a formatted report of eligible and rejected applicants.
-
-## 3. Assumptions
-
-- Every applicant has exactly 5 subject marks (out of 100 each).
-- Aggregate = arithmetic mean of the 5 marks.
-- Income limit is ₹5,00,000; attendance limit is 75%; subject minimum is 50.
-- All input data is hypothetical sample data.
-- Ties on aggregate are broken strictly by the documented order:
-  attendance ↓ → income ↑ → roll ↑.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -66,67 +40,11 @@ the system must:
 11. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-                        ┌─────────┐
-                        │  START  │
-                        └────┬────┘
-                             ▼
-                  ┌──────────────────────┐
-                  │ read policy limits &  │
-                  │ applicant records     │
-                  └──────────┬───────────┘
-                             ▼
-                 ┌───────────────────────┐
-                 │ eligible=[] rejected=[]│
-                 └──────────┬────────────┘
-                            ▼
-              ┌──────────────────────────┐◄──────────────┐
-              │ FOR each applicant       │               │
-              └──────────┬───────────────┘               │
-                         ▼                               │
-              ┌───────────────────────┐                  │
-              │ UNPACK tuple →        │                  │
-              │ roll,name,marks,att,inc│                 │
-              └──────────┬────────────┘                  │
-                         ▼                               │
-              ┌───────────────────────┐                  │
-              │ aggregate = Σmarks / n│                  │
-              │ reasons = []          │                  │
-              └──────────┬────────────┘                  │
-                         ▼                               │
-        ┌────────────────────────────────┐               │
-        │ aggregate≥60 AND all marks≥50  │──NO──► reject  │
-        │ AND att≥75 AND income≤500000 ? │   +reasons ────┤
-        └───────────────┬────────────────┘               │
-                   YES  ▼                                │
-              ┌───────────────────────┐                  │
-              │ append to eligible    │                  │
-              └──────────┬────────────┘                  │
-                         └───────────────┬───────────────┘
-                                         ▼
-                          ┌────────────────────────┐
-                          │ SORT eligible by       │
-                          │ (agg↓, att↓, inc↑, roll↑)│
-                          └───────────┬────────────┘
-                                      ▼
-                          ┌────────────────────────┐
-                          │ print ranked table,    │
-                          │ tie log, rejections,   │
-                          │ summary                │
-                          └───────────┬────────────┘
-                                      ▼
-                               ┌─────────────┐
-                               │    END      │
-                               └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN SCHOLARSHIP_ALLOCATION
@@ -175,78 +93,125 @@ BEGIN SCHOLARSHIP_ALLOCATION
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (eligibility + ranking):
+## Python source code
 
 ```python
+"""
+Case Study 01: University Scholarship Allocation
+-------------------------------------------------
+Syllabus: variables, data types, operators, conditional statements, loops,
+lists, tuples, tuple unpacking, sorting / ranking.
+"""
+
+# ---------------- Policy constants ----------------
+MIN_AGGREGATE = 60.0
+MIN_SUBJECT_MARK = 50
+MIN_ATTENDANCE = 75.0
+MAX_FAMILY_INCOME = 500000
+SUBJECTS = ["Maths", "Physics", "Chemistry", "English", "CS"]
+
+# ---------------- Applicant records ----------------
+# Tuple format: (roll, marks_list, attendance_percent, family_income)
+APPLICANTS = [
+    ("S101", "Ananya", [82, 76, 90, 71, 85], 92, 320000),
+    ("S102", "Bharat", [55, 48, 62, 70, 58], 78, 480000),
+    ("S103", "Chitra", [74, 69, 71, 66, 80], 84, 610000),
+    ("S104", "Deepak", [61, 57, 64, 59, 66], 76, 495000),
+    ("S105", "Fatima", [91, 88, 94, 87, 96], 97, 250000),
+    ("S106", "Gopal", [58, 52, 49, 63, 55], 71, 300000),
+    ("S107", "Harsha", [77, 72, 68, 74, 70], 80, 540000),
+    ("S108", "Ishaan", [64, 58, 66, 60, 59], 88, 410000),
+]
+
+
 def evaluate(applicant):
+    """Return (eligible, aggregate, reasons) for one applicant tuple."""
     roll, name, marks, attendance, income = applicant      # tuple unpacking
     aggregate = sum(marks) / len(marks)
     reasons = []
+
     if aggregate < MIN_AGGREGATE:
         reasons.append("aggregate %.1f below %.0f" % (aggregate, MIN_AGGREGATE))
-    for i in range(len(marks)):
+
+    for i in range(len(marks)):                            # subject-wise minimum
         if marks[i] < MIN_SUBJECT_MARK:
             reasons.append("%s score %d below %d" % (SUBJECTS[i], marks[i], MIN_SUBJECT_MARK))
+
     if attendance < MIN_ATTENDANCE:
         reasons.append("attendance %.1f%% below %.0f%%" % (attendance, MIN_ATTENDANCE))
+
     if income > MAX_FAMILY_INCOME:
         reasons.append("family income %d above limit %d" % (income, MAX_FAMILY_INCOME))
+
     return (len(reasons) == 0), aggregate, reasons
 
+
 def rank_key(record):
-    """Tie-break: aggregate desc, attendance desc, income asc, roll asc."""
+    """Tie-break rule: aggregate desc, attendance desc, income asc, roll asc."""
     roll, name, aggregate, attendance, income = record
     return (-aggregate, -attendance, income, roll)
+
+
+def main():
+    eligible = []
+    rejected = []
+
+    for applicant in APPLICANTS:
+        ok, aggregate, reasons = evaluate(applicant)
+        roll, name, marks, attendance, income = applicant
+        if ok:
+            eligible.append((roll, name, round(aggregate, 2), attendance, income))
+        else:
+            rejected.append((roll, name, reasons))
+
+    eligible.sort(key=rank_key)
+
+    print("=" * 74)
+    print("  RANKED LIST OF ELIGIBLE SCHOLARSHIP APPLICANTS")
+    print("=" * 74)
+    print("%-5s %-9s %-10s %-11s %-10s" % ("Rank", "Roll", "Name", "Aggregate", "Attendance"))
+    print("-" * 74)
+    for i in range(len(eligible)):
+        roll, name, aggregate, attendance, income = eligible[i]
+        print("%-5d %-9s %-10s %-11.2f %-10s" % (i + 1, roll, name, aggregate, "%.1f%%" % attendance))
+    print("-" * 74)
+
+    # ---- detect and explain ties that were resolved ----
+    print("\nTIE RESOLUTION LOG:")
+    tie_found = False
+    for i in range(len(eligible) - 1):
+        if eligible[i][2] == eligible[i + 1][2]:
+            tie_found = True
+            a, b = eligible[i], eligible[i + 1]
+            print("  Tie at aggregate %.2f between %s and %s -> broken by attendance "
+                  "(%.0f%% vs %.0f%%), higher attendance ranked first."
+                  % (a[2], a[0], b[0], a[3], b[3]))
+    if not tie_found:
+        print("  No ties occurred.")
+
+    print("\nREJECTED APPLICANTS:")
+    print("-" * 74)
+    for roll, name, reasons in rejected:
+        print("  %s (%s):" % (roll, name))
+        for r in reasons:
+            print("     - %s" % r)
+    print("-" * 74)
+    print("Summary: %d eligible, %d rejected, %d total."
+          % (len(eligible), len(rejected), len(APPLICANTS)))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run: `python3 solution.py`
+## Test cases
 
-## 8. Test Cases
+Eight automated checks: S101 accepted with aggregate 80.8; S102 rejected (aggregate 58.6 and Physics 48); S103 rejected for income; S106 rejected for attendance; S105 ranked first; the tie at 61.40 between S108 and S104 broken by attendance; totals 4 eligible / 4 rejected of 8. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **8/8 passing**
-(`python3 test_cases.py`).
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | S101 Ananya: [82,76,90,71,85], 92%, ₹3,20,000 | eligible, aggregate 80.8 | eligible, 80.80 | PASS |
-| TC-02 | S102 Bharat: [55,48,62,70,58] | rejected (aggregate 58.6 < 60) | rejected, 58.6 | PASS |
-| TC-03 | S102 subject Physics = 48 | subject-wise violation reported | "Physics score 48 below 50" | PASS |
-| TC-04 | S103 income ₹6,10,000 | income violation reported | "family income 610000 above limit" | PASS |
-| TC-05 | S106 attendance 71% | attendance violation reported | "attendance 71.0% below 75%" | PASS |
-| TC-06 | rank all eligible | highest aggregate first | S105 (91.20) ranked #1 | PASS |
-| TC-07 | S108 vs S104 both 61.40 | tie broken by attendance (88 > 76) | S108 ranked above S104 | PASS |
-| TC-08 | all 8 applicants | 4 eligible / 4 rejected | 4 / 4 | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt)
+## Conclusion
 
-```text
-Rank  Roll      Name       Aggregate   Attendance
-1     S105      Fatima     91.20       97.0%
-2     S101      Ananya     80.80       92.0%
-3     S108      Ishaan     61.40       88.0%
-4     S104      Deepak     61.40       76.0%
-
-TIE RESOLUTION LOG:
-  Tie at aggregate 61.40 between S108 and S104 -> broken by attendance
-  (88% vs 76%), higher attendance ranked first.
-
-Summary: 4 eligible, 4 rejected, 8 total.
-```
-
-## 10. Conclusion
-
-The system successfully models the complete scholarship workflow — multi-criteria
-eligibility screening, deterministic ranking, and explainable rejections — using
-only tuples, lists, tuple unpacking, loops, conditionals, and operators. The
-designed tie-break key proved essential: two applicants tied at 61.40 were
-correctly ordered by attendance. The automated tests confirm that every policy
-rule fires exactly when it should, and the ranked report is ready for direct
-use by the scholarship committee.
+The system screens applicants on all four criteria, ranks them deterministically, and explains every rejection. The tie-break key correctly ordered S108 above S104 at an equal aggregate of 61.40. Only tuples, lists, unpacking, loops, conditionals and operators were needed.

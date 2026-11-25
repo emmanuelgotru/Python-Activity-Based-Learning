@@ -1,47 +1,18 @@
 # Case Study 64 — Tuple-Based Course Registration Validation
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Represent course registrations as tuples, identify duplicate registrations and invalid course combinations, and determine which students violate the supplied rules.
 
-Represent **course registrations as tuples**, identify **duplicate registrations
-and invalid course combinations**, and determine **students whose selections
-violate supplied rules**.
+## Objectives
 
-Data shape (nested tuples):
+Model each registration as a nested tuple; unpack outer and inner tuples while validating; detect duplicates with tuple counting; enforce the enrolment cap, prerequisites, exclusive pair and known-code rules; report every violation per student.
 
-```python
-(roll, name, ((code, title), (code, title), ...))
-```
+## Assumptions
 
-Rules enforced:
+Each record is (roll, name, ((code, title), ...)). Rules: at most 5 courses, no duplicate codes, CS201 requires CS101 and CS301 requires CS201 in the same list, PHY101 and PHY102 cannot be combined, and only CS101/CS201/CS301/MATH101/PHY101/PHY102/ENG101 are known. Data is hypothetical.
 
-1. **No duplicate** course codes in one registration.
-2. At most **5 courses** per student.
-3. **Prerequisites**: `CS201` requires `CS101`; `CS301` requires `CS201`
-   (both must appear in the same registration).
-4. **Mutually exclusive pair**: `PHY101` and `PHY102` cannot both be taken.
-5. Only **known course codes** may appear: CS101, CS201, CS301, MATH101,
-   PHY101, PHY102, ENG101.
-
-## 2. Objectives
-
-- Model hierarchical records with **nested tuples**.
-- Use **tuple operations**: `len()`, iteration, membership, `.count()`.
-- **Unpack** outer and inner tuples while validating.
-- Detect duplicates and rule violations with loops and conditionals.
-- Report per-student verdicts and a violator summary.
-
-## 3. Assumptions
-
-- Course codes are unique identifiers; titles are informational.
-- Prerequisites mean "registered in the same semester list".
-- A student with zero violations is VALID; one or more → INVALID with all
-  violations listed (not just the first).
-- Six sample registrations cover every rule at least once.
-- Data is hypothetical.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -65,55 +36,11 @@ Rules enforced:
 6. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-                ┌─────────┐
-                │  START  │
-                └────┬────┘
-                     ▼
-       ┌──────────────────────────┐
-       │ REGISTRATIONS ready      │
-       └────────────┬─────────────┘
-                    ▼
-     ┌──────────────────────────────┐◄─────────────┐
-     │ FOR each (roll,name,courses) │              │
-     └────────────┬─────────────────┘              │
-                  ▼                                │
-     ┌──────────────────────────┐                  │
-     │ UNPACK + build codes list│                  │
-     │ violations ← []          │                  │
-     └────────────┬─────────────┘                  │
-                  ▼                                │
-     ┌──────────────────────────┐                  │
-     │ duplicates? too many?    │──YES──► append   │
-     │ missing prerequisite?    │──YES──► append   │
-     │ exclusive pair?          │──YES──► append   │
-     │ unknown code?            │──YES──► append   │
-     └────────────┬─────────────┘                  │
-                  ▼                                │
-     ┌──────────────────────────┐                  │
-     │ violations empty?        │                  │
-     │  YES → VALID             │                  │
-     │  NO  → INVALID + list    │                  │
-     └────────────┬─────────────┘                  │
-                  └──────────┬─────────────────────┘
-                             ▼
-               ┌──────────────────────────┐
-               │ PRINT summary: counts,   │
-               │ list of violators        │
-               └────────────┬─────────────┘
-                            ▼
-                     ┌─────────────┐
-                     │    END      │
-                     └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN COURSE_REGISTRATION_VALIDATION
@@ -163,96 +90,140 @@ BEGIN COURSE_REGISTRATION_VALIDATION
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (unpacking + rule checks):
+## Python source code
 
 ```python
+"""
+Case Study 64: Tuple-Based Course Registration Validation
+---------------------------------------------------------
+Syllabus: tuples, tuple operations, tuple unpacking, nested tuples,
+lists, conditional statements, loops, duplicate detection.
+"""
+
+MAX_COURSES = 5
+PREREQ = {"CS201": "CS101", "CS301": "CS201"}     # course -> required course
+MUTUALLY_EXCLUSIVE = [("PHY101", "PHY102")]       # pick only one
+
+# (roll, name, ((code, title), ...))
+REGISTRATIONS = [
+    ("R01", "Ananya", (
+        ("CS101", "Intro to Programming"),
+        ("MATH101", "Calculus"),
+        ("PHY101", "Physics I"),
+    )),
+    ("R02", "Bharat", (
+        ("CS101", "Intro to Programming"),
+        ("CS101", "Intro to Programming"),       # duplicate
+        ("CS201", "Data Structures"),
+    )),
+    ("R03", "Chitra", (
+        ("CS201", "Data Structures"),            # missing prerequisite CS101
+        ("MATH101", "Calculus"),
+    )),
+    ("R04", "Deepak", (
+        ("CS101", "Intro to Programming"),
+        ("PHY101", "Physics I"),
+        ("PHY102", "Physics II"),                # exclusive pair
+        ("MATH101", "Calculus"),
+        ("CS101", "Intro to Programming"),       # duplicate + 6th course
+        ("ENG101", "Technical English"),
+    )),
+    ("R05", "Fatima", (
+        ("CS101", "Intro to Programming"),
+        ("CS201", "Data Structures"),
+        ("MATH101", "Calculus"),
+        ("PHY101", "Physics I"),
+        ("ENG101", "Technical English"),
+    )),
+    ("R06", "Gopal", (
+        ("CS301", "Algorithms"),                 # missing CS201 (and CS101)
+        ("MATH101", "Calculus"),
+    )),
+]
+
+
 def validate(student):
-    roll, name, courses = student              # tuple unpacking
+    """Return list of rule violations for one registration tuple."""
+    roll, name, courses = student          # tuple unpacking
     codes = []
-    for code, title in courses:                # unpack inner tuples
+    for code, title in courses:            # unpacking each inner tuple
         codes.append(code)
+
     violations = []
 
-    for c in codes:                            # duplicates
+    # rule 1: no duplicate course codes
+    for c in codes:
         if codes.count(c) > 1 and ("duplicate '%s'" % c) not in violations:
             violations.append("duplicate '%s'" % c)
 
-    if len(courses) > MAX_COURSES:             # over-enrolment
+    # rule 2: at most MAX_COURSES courses
+    if len(courses) > MAX_COURSES:
         violations.append("enrolled in %d courses (max %d)" % (len(courses), MAX_COURSES))
 
-    for c in codes:                            # prerequisites
+    # rule 3: prerequisites must also be registered
+    for c in codes:
         if c in PREREQ and PREREQ[c] not in codes:
             msg = "missing prerequisite %s for %s" % (PREREQ[c], c)
             if msg not in violations:
                 violations.append(msg)
 
-    for a, b in MUTUALLY_EXCLUSIVE:            # exclusive pair
+    # rule 4: mutually exclusive pairs
+    for a, b in MUTUALLY_EXCLUSIVE:
         if a in codes and b in codes:
             violations.append("mutually exclusive pair %s + %s" % (a, b))
-    ...
+
+    # rule 5: every course code must be a known code
+    known = {"CS101", "CS201", "CS301", "MATH101", "PHY101", "PHY102", "ENG101"}
+    for c in codes:
+        if c not in known:
+            violations.append("unknown course code '%s'" % c)
+
     return violations
+
+
+def main():
+    print("=" * 74)
+    print("  TUPLE-BASED COURSE REGISTRATION VALIDATION")
+    print("=" * 74)
+    print("Rules: max %d courses, no duplicates, prerequisites satisfied," % MAX_COURSES)
+    print("exclusive pairs not combined, only known course codes.")
+    print("-" * 74)
+
+    violators = []
+    for student in REGISTRATIONS:
+        roll, name, courses = student
+        codes = [c for c, t in courses]
+        violations = validate(student)
+        status = "VALID" if not violations else "INVALID"
+        print("  %s (%s) - %d course(s): %s"
+              % (roll, name, len(courses), ", ".join(codes)))
+        print("      -> %s" % status)
+        for v in violations:
+            print("         * %s" % v)
+        if violations:
+            violators.append((roll, name))
+
+    print("-" * 74)
+    print("Summary: %d valid, %d violating student(s)."
+          % (len(REGISTRATIONS) - len(violators), len(violators)))
+    if violators:
+        print("Students violating rules:")
+        for roll, name in violators:
+            print("   - %s %s" % (roll, name))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run: `python3 solution.py`
+## Test cases
 
-## 8. Test Cases
+Eleven automated checks: R01 and R05 valid; R02 flagged for duplicate CS101; R03 for the missing CS101 prerequisite; R04 for the exclusive pair, six courses and a duplicate; R06 for the missing CS201 prerequisite; tuple structure intact; totals 2 valid / 4 invalid of 6. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **11/11 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | R01 (3 clean courses) | no violations | `[]` | PASS |
-| TC-02 | R02 (CS101 twice) | duplicate reported | "duplicate 'CS101'" | PASS |
-| TC-03 | R03 (CS201 w/o CS101) | missing prerequisite CS101 | reported | PASS |
-| TC-04 | R04 (PHY101+PHY102) | exclusive pair reported | reported | PASS |
-| TC-05 | R04 (6 courses) | exceeds max 5 | "max 5" reported | PASS |
-| TC-06 | R04 duplicate | duplicate also reported | reported | PASS |
-| TC-07 | R05 (valid 5 courses) | no violations | `[]` | PASS |
-| TC-08 | R06 (CS301 w/o CS201) | missing CS201 for CS301 | reported | PASS |
-| TC-09 | record structure | tuple of (str,str,tuple-of-pairs) | structure matched | PASS |
-| TC-10 | all 6 registrations | 2 valid / 4 invalid | 2 / 4 | PASS |
-| TC-11 | inner items | every course is a 2-tuple | all 2-tuples | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt)
+## Conclusion
 
-```text
-  R01 (Ananya) - 3 course(s): CS101, MATH101, PHY101
-      -> VALID
-  R02 (Bharat) - 3 course(s): CS101, CS101, CS201
-      -> INVALID
-         * duplicate 'CS101'
-  R03 (Chitra) - 2 course(s): CS201, MATH101
-      -> INVALID
-         * missing prerequisite CS101 for CS201
-  R04 (Deepak) - 6 course(s): CS101, PHY101, PHY102, MATH101, CS101, ENG101
-      -> INVALID
-         * duplicate 'CS101'
-         * enrolled in 6 courses (max 5)
-         * mutually exclusive pair PHY101 + PHY102
-  R05 (Fatima) - 5 course(s): CS101, CS201, MATH101, PHY101, ENG101
-      -> VALID
-  R06 (Gopal) - 2 course(s): CS301, MATH101
-      -> INVALID
-         * missing prerequisite CS201 for CS301
-
-Summary: 2 valid, 4 violating student(s).
-```
-
-## 10. Conclusion
-
-Nested tuples proved to be a natural, immutable representation for registration
-records: unpacking the outer tuple gives instant access to roll, name and the
-course tuple, and unpacking each inner pair yields code and title without any
-library support. All five supplied rules — duplicates, enrolment cap,
-prerequisites, exclusive pairs and known-code checks — fire independently, as
-shown by R04 which accumulates three separate violations in one report. The
-suite confirms 2 valid / 4 invalid classifications, demonstrating thorough
-validation through tuple operations, `.count()`, membership tests and loops.
+Nested tuples proved a natural record shape: unpacking gives instant access to roll, name and courses, and all five rules fire independently - R04 accumulates three separate violations in one report.

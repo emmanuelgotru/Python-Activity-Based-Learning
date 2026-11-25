@@ -1,40 +1,18 @@
 # Case Study 26 — Nested Loop Examination Seating Generator
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Generate an examination seating arrangement with row and column identifiers, reserved positions, alternate seating restrictions and a fixed classroom capacity, using nested loops.
 
-Generate a **seating arrangement** for an examination hall with row and column
-identifiers, **reserved positions**, **alternate seating restrictions**, and a
-fixed classroom capacity — using **nested loops**.
+## Objectives
 
-Configuration used:
+Build the 6x8 seating grid with nested loops; apply the reserved-seat and alternate-spacing rules with conditionals; validate reserved seats before printing; count open, reserved and blocked positions from the nested list.
 
-- Classroom grid: **6 rows × 8 columns** (48 positions)
-- Reserved seats (invigilator desks): `(2,3), (2,4), (5,7)` — 1-based
-- Alternate-spacing rule: in even rows (2, 4, 6), only **even columns** may be
-  seated; odd columns in those rows are blocked
-- The system must validate reserved seats lie inside the grid, print the full
-  labelled grid, and summarise open / reserved / blocked counts.
+## Assumptions
 
-## 2. Objectives
+Grid is 6 rows x 8 columns, numbered from 1 in the display. Reserved seats (2,3), (2,4), (5,7) are invigilator desks and override all other rules. In even rows (2, 4, 6) only even columns may be seated. Exam capacity = open + reserved seats. Data is hypothetical.
 
-- Build a 2-D grid with **nested loops** (rows outer, columns inner).
-- Apply **conditional statements** for reserved and alternate-spacing rules.
-- Validate input data (reserved seats inside bounds).
-- Count and report seat categories by iterating a **nested list**.
-- Print an aligned, labelled seating chart.
-
-## 3. Assumptions
-
-- Rows and columns are numbered from 1 in the display, 0-based in the list.
-- Reserved seats take priority over the alternate-spacing block.
-- "Exam capacity" = open + reserved seats (blocked seats cannot be used).
-- The alternate rule applies only to even rows' odd columns; all other cells
-  are open unless reserved.
-- Data is hypothetical.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -60,60 +38,11 @@ Configuration used:
 11. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-                ┌─────────┐
-                │  START  │
-                └────┬────┘
-                     ▼
-       ┌──────────────────────────┐
-       │ set ROWS, COLS, RESERVED,│
-       │ alternate-row rules      │
-       └────────────┬─────────────┘
-                    ▼
-        ┌───────────────────────┐
-        │ FOR each reserved seat│
-        │ inside grid?          │──NO──► print ERROR → END
-        └───────────┬───────────┘
-                 YES│
-                    ▼
-     ┌──────────────────────────────┐
-     │ seat ← []                    │
-     └──────────────┬───────────────┘
-                    ▼
-      ┌─────────────────────────┐◄───────────────┐
-      │ FOR r ← 1 TO ROWS       │                │
-      └────────────┬────────────┘                │
-                   ▼                             │
-        ┌───────────────────────┐                │
-        │ FOR c ← 1 TO COLS     │                │
-        └──────────┬────────────┘                │
-                   ▼                             │
-        ┌──────────────────────────┐             │
-        │ (r,c) reserved?  → "R"   │             │
-        │ elif alt-row & odd col   │             │
-        │            → "X"         │             │
-        │ else        → "O"        │             │
-        └────────────┬─────────────┘             │
-                     └──────────┬────────────────┘
-                                ▼
-                  ┌─────────────────────────┐
-                  │ PRINT labelled grid     │
-                  │ COUNT O / R / X         │
-                  │ capacity = O + R        │
-                  └────────────┬────────────┘
-                               ▼
-                        ┌─────────────┐
-                        │    END      │
-                        └─────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN SEATING_GENERATOR
@@ -159,13 +88,33 @@ BEGIN SEATING_GENERATOR
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (grid construction with nested loops):
+## Python source code
 
 ```python
+"""
+Case Study 26: Nested Loop Examination Seating Generator
+--------------------------------------------------------
+Syllabus: nested loops, conditional statements, lists, operators,
+pattern / grid generation, input validation.
+"""
+
+# ---------------- Classroom configuration ----------------
+ROWS = 6
+COLS = 8
+RESERVED = [(2, 3), (2, 4), (5, 7)]        # (row, col) 1-based, invigilator desks
+ALT_ROWS = (2, 4, 6)                       # alternate rows keep only even columns
+ALT_BLOCKED_COLS = (1, 3, 5, 7)            # odd columns blocked in those rows
+
+
+def validate_reserved():
+    """Check every reserved seat lies inside the classroom grid."""
+    problems = []
+    for r, c in RESERVED:
+        if not (1 <= r <= ROWS and 1 <= c <= COLS):
+            problems.append("reserved seat (%d,%d) is outside %dx%d grid" % (r, c, ROWS, COLS))
+    return problems
+
+
 def build_seating():
     """Nested list: 'O' open, 'R' reserved, 'X' blocked by alternate rule."""
     seat = []
@@ -180,60 +129,78 @@ def build_seating():
                 row.append("O")
         seat.append(row)
     return seat
+
+
+def print_seating(seat):
+    print("     " + "  ".join("C%d" % c for c in range(1, COLS + 1)))
+    print("     " + "-" * (COLS * 3 - 1))
+    for r in range(ROWS):
+        cells = "  ".join(seat[r][c] for c in range(COLS))
+        print("R%-3d | %s" % (r + 1, cells))
+    print("\n  Legend: O = open seat   R = reserved   X = blocked (alternate spacing)")
+
+
+def count_seats(seat):
+    o = r = x = 0
+    for row in seat:                       # loop over nested list
+        for cell in row:
+            if cell == "O":
+                o += 1
+            elif cell == "R":
+                r += 1
+            else:
+                x += 1
+    return o, r, x
+
+
+def main():
+    print("=" * 60)
+    print("  EXAMINATION SEATING ARRANGEMENT GENERATOR")
+    print("=" * 60)
+
+    problems = validate_reserved()
+    if problems:
+        print("VALIDATION ERRORS:")
+        for p in problems:
+            print("  - " + p)
+        return
+
+    seat = build_seating()
+    print_seating(seat)
+
+    o, r, x = count_seats(seat)
+    print("\nSUMMARY")
+    print("-" * 60)
+    print("  Total grid positions : %d  (%d rows x %d cols)" % (ROWS * COLS, ROWS, COLS))
+    print("  Open seats (O)       : %d" % o)
+    print("  Reserved seats (R)   : %d" % r)
+    print("  Blocked seats (X)    : %d" % x)
+    print("  Exam capacity        : %d students" % (o + r))
+    print("  Rows fully usable    : %d of %d" %
+          (sum(1 for row in seat if "X" not in row), ROWS))
+
+    # ---- demonstrate validation with a bad reserved seat ----
+    print("\nVALIDATION DEMO (out-of-range reserved seat):")
+    bad = (9, 2)
+    if 1 <= bad[0] <= ROWS and 1 <= bad[1] <= COLS:
+        print("  seat accepted")
+    else:
+        print("  ERROR: reserved seat (%d,%d) is outside %dx%d grid"
+              % (bad[0], bad[1], ROWS, COLS))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run: `python3 solution.py`
+## Test cases
 
-## 8. Test Cases
+Twelve automated checks: grid is 6x8; (2,3) and (5,7) marked R; odd columns of rows 2/4/6 blocked while reserved cells stay R; (1,1) stays open; the default reserved list validates; an out-of-range seat (9,2) is rejected; counts 34 open + 3 reserved + 11 blocked = 48. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **12/12 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | build grid | 6 rows | 6 | PASS |
-| TC-02 | each row | 8 columns | 8 for all rows | PASS |
-| TC-03 | reserved (2,3) | cell = "R" | "R" | PASS |
-| TC-04 | reserved (5,7) | cell = "R" | "R" | PASS |
-| TC-05 | (2,1) odd col in alt row | "X" blocked; (1,1) stays "O" | X / O | PASS |
-| TC-06 | (4,5) | "X" blocked | "X" | PASS |
-| TC-07 | (2,2) even col alt row | open "O" | "O" | PASS |
-| TC-08 | reserved vs alt rule | reserved wins ("R") | "R" | PASS |
-| TC-09 | default RESERVED list | valid (no errors) | `[]` | PASS |
-| TC-10 | reserved (9,2) | out-of-range flagged | 1 problem, "outside" | PASS |
-| TC-11 | seat counts | O+R+X = 48 | 34+3+11 = 48 | PASS |
-| TC-12 | reserved count | 3 | 3 | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt)
+## Conclusion
 
-```text
-     C1  C2  C3  C4  C5  C6  C7  C8
-     ---------------------------------
-R1   | O   O   O   O   O   O   O   O
-R2   | X   O   R   R   O   O   O   O
-R3   | O   O   O   O   O   O   O   O
-R4   | X   O   X   O   X   O   X   O
-R5   | O   O   O   O   O   O   O   R
-R6   | X   O   X   O   X   O   X   O
-
-SUMMARY
-  Total grid positions : 48  (6 rows x 8 cols)
-  Open seats (O)       : 34
-  Reserved seats (R)   : 3
-  Blocked seats (X)    : 11
-  Exam capacity        : 37 students
-```
-
-## 10. Conclusion
-
-The generator builds a fully labelled 6×8 seating chart with two interacting
-rules (reserved desks and alternate-spacing) purely through nested loops and
-conditional checks. Validation correctly rejects an out-of-range reserved seat
-before any output is produced, and the summary accounts for all 48 grid
-positions (34 open + 3 reserved + 11 blocked = 48). The same nested-list
-approach scales to any classroom size by changing three constants, and the
-automated tests pin down every rule including the reserved-over-blocked
-priority.
+Nested loops plus two simple rules produced a fully labelled seating chart, and validation caught an out-of-range reserved seat before any output. The counts account for all 48 positions, and three constants scale the layout to any classroom size.

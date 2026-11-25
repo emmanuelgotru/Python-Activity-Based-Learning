@@ -67,17 +67,17 @@ def main():
         if choice == "1":
             try:
                 amount = float(input("  Deposit amount: ").strip())
-                ok, msg = do_deposit(state, amount)
+                _, msg = do_deposit(state, amount)
             except ValueError:
-                ok, msg = False, "REJECTED: invalid amount (numbers only)."
+                _, msg = False, "REJECTED: invalid amount (numbers only)."
             print("  " + msg)
 
         elif choice == "2":
             try:
                 amount = float(input("  Withdraw amount: ").strip())
-                ok, msg = do_withdraw(state, amount)
+                _, msg = do_withdraw(state, amount)
             except ValueError:
-                ok, msg = False, "REJECTED: invalid amount (numbers only)."
+                _, msg = False, "REJECTED: invalid amount (numbers only)."
             print("  " + msg)
 
         elif choice == "3":

@@ -1,42 +1,18 @@
 # Case Study 38 — ATM Menu-Driven Banking Simulation
 
-Repository: [Python-Activity-Based-Learning](../README.md)
+## Problem statement
 
-## 1. Problem Statement
+Implement repeated menu operations for deposits, withdrawals, balance inquiries and transaction summaries, with validation and account limits.
 
-Implement **repeated menu operations** for deposits, withdrawals, balance
-inquiries, and transaction summaries, with **validation** and specified
-account limits.
+## Objectives
 
-Rules enforced:
+Drive the program with a menu loop; validate every amount before changing state; keep a list of transaction tuples and unpack it for the mini statement; handle non-numeric input without crashing.
 
-- Opening balance: ₹5,000
-- Deposit: must be positive and ≤ ₹1,00,000 per transaction
-- Withdrawal: positive, **multiple of ₹100**, ≤ ₹10,000 per transaction, and
-  must leave **at least ₹1,000** in the account
-- Non-numeric input is rejected without crashing
-- Every accepted transaction is appended to a **list-based mini statement**
-  with its running balance
-- The menu loops until the user chooses Exit, then prints a session summary
+## Assumptions
 
-## 2. Objectives
+Opening balance Rs 5,000. Deposits must be positive and at most Rs 1,00,000. Withdrawals must be positive multiples of Rs 100, at most Rs 10,000, and must leave at least Rs 1,000 in the account. Single account, no interest. Sample input is scripted in demo_input.txt.
 
-- Drive a program with a **menu loop** (`while True` + choice dispatch).
-- Validate inputs using **conditional statements** and operators.
-- Maintain account state and a **list of transactions** (tuples).
-- **Unpack** each log tuple when printing the statement.
-- Handle bad input gracefully (try/except around numeric conversion).
-
-## 3. Assumptions
-
-- Single account, single currency (₹), no interest or fees.
-- Amounts may be entered with decimals for deposits; withdrawals must be
-  whole multiples of 100.
-- The mini statement shows at most the transactions of the current session.
-- Menu choices are read as strings; anything other than 1–5 is rejected.
-- Demo input is scripted in `demo_input.txt` for reproducible output.
-
-## 4. Algorithm
+## Algorithm
 
 ```
 1. START
@@ -63,53 +39,11 @@ Rules enforced:
 5. END
 ```
 
-## 5. Flowchart
+## Flowchart
 
 ![Flowchart](flowchart.png)
 
-Text version:
-
-```
-                ┌─────────┐
-                │  START  │
-                └────┬────┘
-                     ▼
-          ┌─────────────────────┐
-          │ balance ← 5000      │
-          │ log ← []            │
-          └──────────┬──────────┘
-                     ▼
-        ┌────────────────────────┐◄───────────────┐
-        │ PRINT menu             │                │
-        │ READ choice            │                │
-        └────────────┬───────────┘                │
-                     ▼                            │
-        ┌────────────────────────┐                │
-        │ choice = 1 ?           │──YES──► validate & deposit
-        └────────────┬───────────┘                │
-                  NO ▼                            │
-        ┌────────────────────────┐                │
-        │ choice = 2 ?           │──YES──► validate (×100, ≤10000,
-        └────────────┬───────────┘           ≥1000 left) & withdraw
-                  NO ▼                            │
-        ┌────────────────────────┐                │
-        │ choice = 3 ?           │──YES──► PRINT balance
-        └────────────┬───────────┘                │
-                  NO ▼                            │
-        ┌────────────────────────┐                │
-        │ choice = 4 ?           │──YES──► PRINT mini statement
-        └────────────┬───────────┘           (FOR each log row)
-                  NO ▼                            │
-        ┌────────────────────────┐                │
-        │ choice = 5 ?           │──YES──► PRINT summary → END
-        └────────────┬───────────┘                │
-                  NO ▼                            │
-        ┌────────────────────────┐                │
-        │ PRINT "unknown option" │────────────────┘
-        └────────────────────────┘
-```
-
-## 6. Pseudocode
+## Pseudocode
 
 ```
 BEGIN ATM_SIMULATION
@@ -149,14 +83,35 @@ BEGIN ATM_SIMULATION
 END
 ```
 
-## 7. Python Source Code
-
-Complete, runnable source: **[`solution.py`](./solution.py)**
-
-Key logic (withdrawal validation):
+## Python source code
 
 ```python
+"""
+Case Study 38: ATM Menu-Driven Banking Simulation
+--------------------------------------------------
+Syllabus: loops (menu loop), conditional statements, operators,
+variables, input validation, lists for the transaction log.
+"""
+
+MIN_BALANCE = 1000            # balance must never fall below this
+MAX_WITHDRAW = 10000          # per-transaction ceiling
+MAX_DEPOSIT = 100000          # per-transaction ceiling
+OPENING_BALANCE = 5000
+
+
+def do_deposit(state, amount):
+    """Apply a deposit. Returns (ok, message)."""
+    if amount <= 0:
+        return False, "REJECTED: deposit must be positive."
+    if amount > MAX_DEPOSIT:
+        return False, "REJECTED: deposit exceeds Rs %d limit." % MAX_DEPOSIT
+    state["balance"] += amount
+    state["log"].append(("DEPOSIT", amount, state["balance"]))
+    return True, "Deposited Rs %.2f. Balance = Rs %.2f" % (amount, state["balance"])
+
+
 def do_withdraw(state, amount):
+    """Apply a withdrawal with all rule checks. Returns (ok, message)."""
     if amount <= 0:
         return False, "REJECTED: withdrawal must be positive."
     if amount % 100 != 0:
@@ -169,55 +124,79 @@ def do_withdraw(state, amount):
     state["balance"] -= amount
     state["log"].append(("WITHDRAW", amount, state["balance"]))
     return True, "Withdrawn Rs %.2f. Balance = Rs %.2f" % (amount, state["balance"])
+
+
+def show_statement(state):
+    print("  ---- MINI STATEMENT ----")
+    if not state["log"]:
+        print("  No transactions yet.")
+    for i in range(len(state["log"])):
+        kind, amt, bal = state["log"][i]        # tuple unpacking
+        print("  %2d. %-8s Rs %9.2f   balance Rs %9.2f" % (i + 1, kind, amt, bal))
+    print("  Current balance: Rs %.2f" % state["balance"])
+
+
+def menu():
+    print("\n  1. Deposit        2. Withdraw")
+    print("  3. Check balance  4. Mini statement")
+    print("  5. Exit")
+
+
+def main():
+    state = {"balance": OPENING_BALANCE, "log": []}
+    print("=" * 56)
+    print("  ATM BANKING SIMULATION  (opening balance Rs %.2f)" % OPENING_BALANCE)
+    print("=" * 56)
+
+    while True:
+        menu()
+        choice = input("  Enter choice: ").strip()
+
+        if choice == "1":
+            try:
+                amount = float(input("  Deposit amount: ").strip())
+                _, msg = do_deposit(state, amount)
+            except ValueError:
+                _, msg = False, "REJECTED: invalid amount (numbers only)."
+            print("  " + msg)
+
+        elif choice == "2":
+            try:
+                amount = float(input("  Withdraw amount: ").strip())
+                _, msg = do_withdraw(state, amount)
+            except ValueError:
+                _, msg = False, "REJECTED: invalid amount (numbers only)."
+            print("  " + msg)
+
+        elif choice == "3":
+            print("  Current balance: Rs %.2f" % state["balance"])
+
+        elif choice == "4":
+            show_statement(state)
+
+        elif choice == "5":
+            print("-" * 56)
+            print("  SESSION END: %d transaction(s), closing balance Rs %.2f"
+                  % (len(state["log"]), state["balance"]))
+            print("=" * 56)
+            break
+
+        else:
+            print("  REJECTED: unknown option '%s' - choose 1-5." % choice)
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-Run (interactive): `python3 solution.py`
-Run (scripted demo): `python3 solution.py < demo_input.txt`
+## Test cases
 
-## 8. Test Cases
+Ten automated checks: deposit accepted and logged; negative and over-limit deposits rejected; withdrawal accepted; non-multiple of 100, over Rs 10,000 and below the minimum balance all rejected; withdrawal to exactly Rs 1,000 allowed; non-numeric input caught; the log keeps running balances. The scripted demo also exercises three rejections. All pass (test_cases.py).
 
-Automated suite: [`test_cases.py`](./test_cases.py) — **10/10 passing**.
-
-| ID | Input | Expected | Actual | Status |
-|----|-------|----------|--------|--------|
-| TC-01 | deposit ₹1,500 (bal 5000) | accepted, balance 6500, 1 log row | 6500, 1 row | PASS |
-| TC-02 | deposit −100 | rejected, balance unchanged | rejected, 5000 | PASS |
-| TC-03 | deposit ₹2,00,000 | rejected (> ₹1,00,000 limit) | rejected | PASS |
-| TC-04 | withdraw ₹2,000 (bal 8000) | accepted, balance 6000 | 6000 | PASS |
-| TC-05 | withdraw ₹250 | rejected (not multiple of 100) | rejected + message | PASS |
-| TC-06 | withdraw ₹15,000 | rejected (> ₹10,000 limit) | rejected + "limit" | PASS |
-| TC-07 | withdraw ₹2,500 (bal 3000) | rejected (would go below ₹1,000) | rejected | PASS |
-| TC-08 | withdraw ₹2,000 (bal 3000) | accepted, balance = ₹1,000 exactly | accepted | PASS |
-| TC-09 | `float("abc")` | non-numeric input caught | `ValueError` caught | PASS |
-| TC-10 | 3 mixed transactions | log has 3 rows, running balance correct | 3 rows, 5400 | PASS |
-
-## 9. Output
+## Output screenshot
 
 ![Output screenshot](output_screenshot.png)
 
-Full text output: [`output.txt`](./output.txt) · scripted input: [`demo_input.txt`](./demo_input.txt)
+## Conclusion
 
-```text
-  Enter choice:   ---- MINI STATEMENT ----
-   1. DEPOSIT  Rs   5000.00   balance Rs  10000.00
-   2. WITHDRAW Rs   2000.00   balance Rs   8000.00
-   3. DEPOSIT  Rs    250.50   balance Rs   8250.50
-   4. WITHDRAW Rs    100.00   balance Rs   8150.50
-  Current balance: Rs 8150.50
-
-  SESSION END: 4 transaction(s), closing balance Rs 8150.50
-```
-
-The scripted demo also exercises rejections: withdraw ₹12,000 (over limit),
-withdraw ₹9,999 (not a multiple of 100), and a non-numeric amount — each is
-rejected with a message while the balance stays intact.
-
-## 10. Conclusion
-
-The ATM simulation shows how a `while` menu loop plus guarded transaction
-functions produce a robust interactive program: all five rules (positivity,
-multiple-of-100, per-txn ceiling, minimum balance, numeric parsing) are
-enforced *before* any state changes, and the transaction log doubles as the
-mini statement through simple tuple unpacking. The scripted demo and the 10
-automated tests together prove that valid operations update state exactly as
-expected while every invalid operation leaves the balance untouched.
+All five withdrawal rules are checked before any state changes, so every invalid operation leaves the balance untouched while the log doubles as the mini statement through simple tuple unpacking.
