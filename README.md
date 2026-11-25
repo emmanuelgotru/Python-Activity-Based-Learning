@@ -33,6 +33,10 @@ Every case study folder contains:
 - `output_screenshot.png` — screenshot of the output
 - `demo_input.txt` — sample input (only for the two menu-based programs, case 7 and 10)
 
+**Section 2 — Combined PDF:** all 10 case studies are also compiled into a single PDF (every README section — problem statement, objectives, assumptions, algorithm, flowchart, pseudocode, test cases, output, conclusion — plus the complete solution.py, test_cases.py, output.txt and demo_input.txt listings):
+
+**[Python-Activity-Based-Learning-Complete.pdf](Python-Activity-Based-Learning-Complete.pdf)** (103 pages)
+
 ## How to run
 
 ```bash
